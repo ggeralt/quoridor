@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.algebra.quoridor.FourPlayerGameScreenController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.algebra.quoridor.FourPlayerStartGameScreenController">
    <children>
       <Label layoutX="14.0" layoutY="34.0" text="Player 1:">
          <font>
@@ -28,22 +28,22 @@
             <Font size="24.0" />
          </font>
       </Label>
-      <TextField layoutX="128.0" layoutY="26.0" prefHeight="46.0" prefWidth="444.0">
+      <TextField fx:id="playerOneNameTextField" layoutX="128.0" layoutY="26.0" prefHeight="46.0" prefWidth="444.0">
          <font>
             <Font size="24.0" />
          </font>
       </TextField>
-      <TextField layoutX="128.0" layoutY="81.0" prefHeight="46.0" prefWidth="444.0">
+      <TextField fx:id="playerTwoNameTextField" layoutX="128.0" layoutY="81.0" prefHeight="46.0" prefWidth="444.0">
          <font>
             <Font size="24.0" />
          </font>
       </TextField>
-      <TextField layoutX="128.0" layoutY="136.0" prefHeight="46.0" prefWidth="444.0">
+      <TextField fx:id="playerThreeNameTextField" layoutX="128.0" layoutY="136.0" prefHeight="46.0" prefWidth="444.0">
          <font>
             <Font size="24.0" />
          </font>
       </TextField>
-      <TextField layoutX="128.0" layoutY="192.0" prefHeight="46.0" prefWidth="444.0">
+      <TextField fx:id="playerFourNameTextField" layoutX="128.0" layoutY="192.0" prefHeight="46.0" prefWidth="444.0">
          <font>
             <Font size="24.0" />
          </font>
