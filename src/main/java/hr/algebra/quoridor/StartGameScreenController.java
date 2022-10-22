@@ -40,7 +40,7 @@ public class StartGameScreenController implements Initializable {
         Scene scene = null;
 
         try {
-            scene = new Scene(fxmlLoader.load(), 600, 450);
+            scene = new Scene(fxmlLoader.load(), 600, 400);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
