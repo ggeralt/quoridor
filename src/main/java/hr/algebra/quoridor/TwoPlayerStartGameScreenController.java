@@ -16,8 +16,8 @@ public class TwoPlayerStartGameScreenController {
     @FXML
     private TextField playerTwoNameTextField;
 
-    private PlayerDetails playerOneDetails;
-    private PlayerDetails playerTwoDetails;
+    private static PlayerDetails playerOneDetails;
+    private static PlayerDetails playerTwoDetails;
 
     public void startTwoPlayerGame() {
         String playerOneName = playerOneNameTextField.getText();
@@ -43,5 +43,13 @@ public class TwoPlayerStartGameScreenController {
         stage.setTitle("Quoridor");
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static PlayerDetails getPlayerOneDetails() {
+        return playerOneDetails;
+    }
+
+    public static PlayerDetails getPlayerTwoDetails() {
+        return playerTwoDetails;
     }
 }

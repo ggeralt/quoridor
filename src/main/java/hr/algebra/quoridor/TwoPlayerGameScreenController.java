@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
@@ -282,6 +283,14 @@ public class TwoPlayerGameScreenController implements Initializable {
             int X = Integer.parseInt(ids[1]);
             int Y = Integer.parseInt(ids[2]);
 
+            if (X == 1) {
+                if (pressedButton == gameBoard[0][Y]) {
+                    checkPreviouslyClickedButtons();
+                    applyPlayerOneInput();
+                    announceWinner();
+                }
+            }
+
             if (X == 10 && Y == 10) {
                 if (pressedButton == gameBoard[X][Y - 1] || pressedButton == gameBoard[X - 1][Y]) {
                     checkPreviouslyClickedButtons();
@@ -342,6 +351,14 @@ public class TwoPlayerGameScreenController implements Initializable {
             int X = Integer.parseInt(ids[1]);
             int Y = Integer.parseInt(ids[2]);
 
+            if (X == 9) {
+                if (pressedButton == gameBoard[10][Y]) {
+                    checkPreviouslyClickedButtons();
+                    applyPlayerTwoInput();
+                    announceWinner();
+                }
+            }
+
             if (X == 0 && Y == 10) {
                 if (pressedButton == gameBoard[X][Y - 1] || pressedButton == gameBoard[X + 1][Y]) {
                     checkPreviouslyClickedButtons();
@@ -397,6 +414,32 @@ public class TwoPlayerGameScreenController implements Initializable {
                 }
             }
         }
+    }
+
+    private void announceWinner() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("GAME OVER");
+
+        if(!playerOneTurn) {
+            alert.setContentText("The winner is " + TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
+            TwoPlayerStartGameScreenController.getPlayerOneDetails().recordWin();
+        }
+        else {
+            alert.setContentText("The winner is " + TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+            TwoPlayerStartGameScreenController.getPlayerTwoDetails().recordWin();
+        }
+
+        alert.showAndWait();
+
+        System.out.println("Number of wins (" + TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName() + "): "
+                + TwoPlayerStartGameScreenController.getPlayerOneDetails().getNumberOfWins());
+
+        System.out.println("Number of wins (" + TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName() + "): "
+                + TwoPlayerStartGameScreenController.getPlayerTwoDetails().getNumberOfWins());
+
+        turnCounter = 0;
+
+        return;
     }
 
     private void checkPreviouslyClickedButtons() {

@@ -19,7 +19,7 @@ public class PlayerDetails {
         return numberOfWins;
     }
 
-    public void recordWins() {
+    public void recordWin() {
         numberOfWins++;
     }
 }
