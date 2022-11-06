@@ -7,6 +7,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -270,6 +272,9 @@ public class TwoPlayerGameScreenController implements Initializable {
     private Button pressedButton;
     private List<Button> listOfPressedButtons = new ArrayList<>();
 
+    private Image whitePawn = new Image(getClass().getResourceAsStream("image/white_pawn.png"));
+    private Image blackPawn = new Image(getClass().getResourceAsStream("image/black_pawn.png"));
+
     public void buttonPressed(ActionEvent actionEvent) {
 
         pressedButton = (Button)actionEvent.getSource();
@@ -444,13 +449,13 @@ public class TwoPlayerGameScreenController implements Initializable {
 
     private void checkPreviouslyClickedButtons() {
         if (listOfPressedButtons.size() > 1) {
-            listOfPressedButtons.get(0).setText("");
+            listOfPressedButtons.get(0).setGraphic(null);
             listOfPressedButtons.remove(0);
         }
     }
 
     private void applyPlayerOneInput() {
-        pressedButton.setText("1");
+        pressedButton.setGraphic(new ImageView(whitePawn));
         playerOnePosition = pressedButton;
         playerOneTurn = false;
         turnCounter++;
@@ -458,7 +463,7 @@ public class TwoPlayerGameScreenController implements Initializable {
     }
 
     private void applyPlayerTwoInput() {
-        pressedButton.setText("2");
+        pressedButton.setGraphic(new ImageView(blackPawn));
         playerTwoPosition = pressedButton;
         playerOneTurn = true;
         turnCounter++;
@@ -596,8 +601,8 @@ public class TwoPlayerGameScreenController implements Initializable {
         playerOnePosition = button_10_5;
         playerTwoPosition = button_0_5;
 
-        button_0_5.setText("2");
-        button_10_5.setText("1");
+        button_0_5.setGraphic(new ImageView(blackPawn));
+        button_10_5.setGraphic(new ImageView(whitePawn));
 
         listOfPressedButtons.add(playerOnePosition);
         listOfPressedButtons.add(playerTwoPosition);
