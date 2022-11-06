@@ -284,6 +284,11 @@ public class TwoPlayerGameScreenController implements Initializable {
         }
 
         if (playerOneTurn) {
+            if (pressedButton == playerTwoPosition) {
+                playerOneTurn = true;
+                return;
+            }
+
             String[] ids = playerOnePosition.getId().split("_", 3);
             int X = Integer.parseInt(ids[1]);
             int Y = Integer.parseInt(ids[2]);
@@ -352,6 +357,11 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
         }
         else {
+            if (pressedButton == playerOnePosition) {
+                playerOneTurn = false;
+                return;
+            }
+
             String[] ids = playerTwoPosition.getId().split("_", 3);
             int X = Integer.parseInt(ids[1]);
             int Y = Integer.parseInt(ids[2]);
