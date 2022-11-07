@@ -265,8 +265,8 @@ public class TwoPlayerGameScreenController implements Initializable {
     private static final int GAME_BOARD_WIDTH = 11;
     private static final int GAME_BOARD_HEIGHT = 11;
     private static int turnCounter = 0;
-    private static int playerOneWalls = 5;
-    private static int playerTwoWalls = 5;
+    private static int playerOneWalls = 10;
+    private static int playerTwoWalls = 10;
     private Boolean playerOneTurn;
     private int wallButtonPressed;
     private Button gameBoard[][];
@@ -285,28 +285,26 @@ public class TwoPlayerGameScreenController implements Initializable {
     public void buttonPressed(ActionEvent actionEvent) {
         pressedButton = (Button)actionEvent.getSource();
 
-        String[] playerOnePositionIds = playerOnePosition.getId().split("_", 3);
-        String[] playerTwoPositionIds = playerTwoPosition.getId().split("_", 3);
+        int X1 = Integer.parseInt(playerOnePosition.getId().split("_", 3)[1]);
+        int Y1 = Integer.parseInt(playerOnePosition.getId().split("_", 3)[2]);
 
-        int X1 = Integer.parseInt(playerOnePositionIds[1]);
-        int Y1 = Integer.parseInt(playerOnePositionIds[2]);
-
-        int X2 = Integer.parseInt(playerTwoPositionIds[1]);
-        int Y2 = Integer.parseInt(playerTwoPositionIds[2]);
+        int X2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[1]);
+        int Y2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[2]);
 
         if("".equals(pressedButton.getText()) == false) {
             return;
         }
 
         if (playerOneTurn) {
-            if (pressedButton == playerTwoPosition) {
-                playerOneTurn = true;
+            if (wallButtonPressed != 0 && playerOneWalls != 0 && pressedButton != playerOnePosition && pressedButton != playerTwoPosition) {
+                pressedButton.setText("X");
+                wallButtonPressed--;
+                playerOneWalls--;
                 return;
             }
 
-            if (wallButtonPressed > 0) {
-                pressedButton.setText("X");
-                wallButtonPressed--;
+            if (pressedButton == playerTwoPosition) {
+                playerOneTurn = true;
                 return;
             }
 
@@ -374,15 +372,16 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
         }
         else {
-            if (pressedButton == playerOnePosition) {
-                playerOneTurn = false;
+            // TODO: fix player turn and add button not clickable when wall is placed
+            if (wallButtonPressed != 0 && playerTwoWalls != 0 && pressedButton != playerOnePosition && pressedButton != playerTwoPosition) {
+                pressedButton.setText("X");
+                wallButtonPressed--;
+                playerTwoWalls--;
                 return;
             }
 
-            // TODO: fix player turn and add button not clickable when wall is placed
-            if (wallButtonPressed > 0) {
-                pressedButton.setText("X");
-                wallButtonPressed--;
+            if (pressedButton == playerOnePosition) {
+                playerOneTurn = false;
                 return;
             }
 
