@@ -265,7 +265,10 @@ public class TwoPlayerGameScreenController implements Initializable {
     private static final int GAME_BOARD_WIDTH = 11;
     private static final int GAME_BOARD_HEIGHT = 11;
     private static int turnCounter = 0;
+    private static int playerOneWalls = 5;
+    private static int playerTwoWalls = 5;
     private Boolean playerOneTurn;
+    private int wallButtonPressed;
     private Button gameBoard[][];
     private Button playerOnePosition;
     private Button playerTwoPosition;
@@ -274,6 +277,10 @@ public class TwoPlayerGameScreenController implements Initializable {
 
     private Image whitePawn = new Image(getClass().getResourceAsStream("image/white_pawn.png"));
     private Image blackPawn = new Image(getClass().getResourceAsStream("image/black_pawn.png"));
+
+    public void wallButtonPressed(ActionEvent actionEvent) {
+        wallButtonPressed = 2;
+    }
 
     public void buttonPressed(ActionEvent actionEvent) {
         pressedButton = (Button)actionEvent.getSource();
@@ -297,10 +304,16 @@ public class TwoPlayerGameScreenController implements Initializable {
                 return;
             }
 
+            if (wallButtonPressed > 0) {
+                pressedButton.setText("X");
+                wallButtonPressed--;
+                return;
+            }
+
             if (X1 == 1) {
                 if (pressedButton == gameBoard[0][Y1]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerOneInput();
+                    applyPlayerInput();
                     announceWinner();
                 }
             }
@@ -308,7 +321,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             if (X1 == 10 && Y1 == 10) {
                 if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1 - 1][Y1]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerOneInput();
+                    applyPlayerInput();
                 }
                 else {
                     playerOneTurn = true;
@@ -317,7 +330,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             else if (X1 == 10 && Y1 == 0) {
                 if (pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerOneInput();
+                    applyPlayerInput();
                 }
                 else {
                     playerOneTurn = true;
@@ -326,7 +339,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             else if (X1 == 10) {
                 if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerOneInput();
+                    applyPlayerInput();
                 }
                 else {
                     playerOneTurn = true;
@@ -335,7 +348,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             else if (Y1 == 10) {
                 if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1 - 1][Y1] || pressedButton == gameBoard[X1 + 1][Y1]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerOneInput();
+                    applyPlayerInput();
                 }
                 else {
                     playerOneTurn = true;
@@ -344,7 +357,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             else if (Y1 == 0) {
                 if (pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1] || pressedButton == gameBoard[X1 + 1][Y1]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerOneInput();
+                    applyPlayerInput();
                 }
                 else {
                     playerOneTurn = true;
@@ -353,7 +366,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             else {
                 if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1] || pressedButton == gameBoard[X1 + 1][Y1]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerOneInput();
+                    applyPlayerInput();
                 }
                 else {
                     playerOneTurn = true;
@@ -366,10 +379,17 @@ public class TwoPlayerGameScreenController implements Initializable {
                 return;
             }
 
+            // TODO: fix player turn and add button not clickable when wall is placed
+            if (wallButtonPressed > 0) {
+                pressedButton.setText("X");
+                wallButtonPressed--;
+                return;
+            }
+
             if (X2 == 9) {
                 if (pressedButton == gameBoard[10][Y2]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerTwoInput();
+                    applyPlayerInput();
                     announceWinner();
                 }
             }
@@ -377,7 +397,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             if (X2 == 0 && Y2 == 10) {
                 if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerTwoInput();
+                    applyPlayerInput();
                 }
                 else {
                     playerOneTurn = false;
@@ -386,7 +406,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             else if (X2 == 0 && Y2 == 0) {
                 if (pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerTwoInput();
+                    applyPlayerInput();
                 }
                 else {
                     playerOneTurn = false;
@@ -395,7 +415,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             else if (X2 == 0) {
                 if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerTwoInput();
+                    applyPlayerInput();
                 }
                 else {
                     playerOneTurn = false;
@@ -404,7 +424,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             else if (Y2 == 10) {
                 if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerTwoInput();
+                    applyPlayerInput();
                 }
                 else {
                     playerOneTurn = false;
@@ -413,7 +433,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             else if (Y2 == 0) {
                 if (pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerTwoInput();
+                    applyPlayerInput();
                 }
                 else {
                     playerOneTurn = false;
@@ -422,7 +442,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             else {
                 if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
                     checkPreviouslyClickedButtons();
-                    applyPlayerTwoInput();
+                    applyPlayerInput();
                 }
                 else {
                     playerOneTurn = false;
@@ -454,7 +474,7 @@ public class TwoPlayerGameScreenController implements Initializable {
 
         turnCounter = 0;
 
-        return;
+        startTwoPlayerGame();
     }
 
     private void checkPreviouslyClickedButtons() {
@@ -464,18 +484,18 @@ public class TwoPlayerGameScreenController implements Initializable {
         }
     }
 
-    private void applyPlayerOneInput() {
-        pressedButton.setGraphic(new ImageView(whitePawn));
-        playerOnePosition = pressedButton;
-        playerOneTurn = false;
-        turnCounter++;
-        listOfPressedButtons.add(pressedButton);
-    }
+    private void applyPlayerInput() {
+        if (playerOneTurn) {
+            pressedButton.setGraphic(new ImageView(whitePawn));
+            playerOnePosition = pressedButton;
+            playerOneTurn = false;
+        }
+        else {
+            pressedButton.setGraphic(new ImageView(blackPawn));
+            playerTwoPosition = pressedButton;
+            playerOneTurn = true;
+        }
 
-    private void applyPlayerTwoInput() {
-        pressedButton.setGraphic(new ImageView(blackPawn));
-        playerTwoPosition = pressedButton;
-        playerOneTurn = true;
         turnCounter++;
         listOfPressedButtons.add(pressedButton);
     }
