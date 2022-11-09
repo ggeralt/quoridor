@@ -30,7 +30,10 @@ public class StartGameScreenController implements Initializable {
     public void startGame() {
         FXMLLoader fxmlLoader = null;
 
-        if (twoPlayerRadioButton.isSelected()) {
+        if (!twoPlayerRadioButton.isSelected() && !fourPlayerRadioButton.isSelected()) {
+            fxmlLoader = new FXMLLoader(QuoridorApplication.class.getResource("twoPlayerStartGameScreen.fxml"));
+        }
+        else if (twoPlayerRadioButton.isSelected()) {
             fxmlLoader = new FXMLLoader(QuoridorApplication.class.getResource("twoPlayerStartGameScreen.fxml"));
         }
         else {

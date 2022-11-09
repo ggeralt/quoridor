@@ -33,7 +33,7 @@ public class TwoPlayerStartGameScreenController {
         Scene scene = null;
 
         try {
-            scene = new Scene(fxmlLoader.load(), 600, 400);
+            scene = new Scene(fxmlLoader.load(), 1154, 690);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

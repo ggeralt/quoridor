@@ -264,11 +264,12 @@ public class TwoPlayerGameScreenController implements Initializable {
 
     private static final int GAME_BOARD_WIDTH = 11;
     private static final int GAME_BOARD_HEIGHT = 11;
-    private static int turnCounter = 0;
+    private static int turnCounter;
+    private static int wallButtonPressed = 0;
     private static int playerOneWalls = 10;
     private static int playerTwoWalls = 10;
     private Boolean playerOneTurn;
-    private int wallButtonPressed;
+    private Boolean wallPlacementFinished;
     private Button gameBoard[][];
     private Button playerOnePosition;
     private Button playerTwoPosition;
@@ -300,6 +301,12 @@ public class TwoPlayerGameScreenController implements Initializable {
                 pressedButton.setText("X");
                 wallButtonPressed--;
                 playerOneWalls--;
+
+                if (wallButtonPressed == 0) {
+                    playerOneTurn = false;
+                    wallPlacementFinished = true;
+                }
+
                 return;
             }
 
@@ -372,11 +379,16 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
         }
         else {
-            // TODO: fix player turn and add button not clickable when wall is placed
             if (wallButtonPressed != 0 && playerTwoWalls != 0 && pressedButton != playerOnePosition && pressedButton != playerTwoPosition) {
                 pressedButton.setText("X");
                 wallButtonPressed--;
                 playerTwoWalls--;
+
+                if (wallButtonPressed == 0) {
+                    playerOneTurn = true;
+                    wallPlacementFinished = true;
+                }
+
                 return;
             }
 
@@ -448,6 +460,8 @@ public class TwoPlayerGameScreenController implements Initializable {
                 }
             }
         }
+
+        wallPlacementFinished = false;
     }
 
     private void announceWinner() {
@@ -477,9 +491,13 @@ public class TwoPlayerGameScreenController implements Initializable {
     }
 
     private void checkPreviouslyClickedButtons() {
-        if (listOfPressedButtons.size() > 1) {
+        if (listOfPressedButtons.size() != 0 && !wallPlacementFinished) {
             listOfPressedButtons.get(0).setGraphic(null);
             listOfPressedButtons.remove(0);
+        }
+        else if (listOfPressedButtons.size() != 0 && wallPlacementFinished) {
+            listOfPressedButtons.get(1).setGraphic(null);
+            listOfPressedButtons.remove(1);
         }
     }
 
@@ -502,6 +520,9 @@ public class TwoPlayerGameScreenController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         playerOneTurn = true;
+        wallPlacementFinished = false;
+        wallButtonPressed = 0;
+        turnCounter = 0;
 
         gameBoard = new Button[GAME_BOARD_HEIGHT][GAME_BOARD_WIDTH];
 
