@@ -13,8 +13,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class TwoPlayerGameScreenController implements Initializable {
@@ -264,23 +262,24 @@ public class TwoPlayerGameScreenController implements Initializable {
 
     private static final int GAME_BOARD_WIDTH = 11;
     private static final int GAME_BOARD_HEIGHT = 11;
+
     private static int turnCounter;
-    private static int wallButtonPressed = 0;
-    private static int playerOneWalls = 10;
-    private static int playerTwoWalls = 10;
+    private static int wallButtonPlacementCounter;
+    private static int playerOneWalls;
+    private static int playerTwoWalls;
     private Boolean playerOneTurn;
-    private Boolean wallPlacementFinished;
     private Button gameBoard[][];
     private Button playerOnePosition;
+    private Button playerOnePreviousPosition;
     private Button playerTwoPosition;
+    private Button playerTwoPreviousPosition;
     private Button pressedButton;
-    private List<Button> listOfPressedButtons = new ArrayList<>();
 
     private Image whitePawn = new Image(getClass().getResourceAsStream("image/white_pawn.png"));
     private Image blackPawn = new Image(getClass().getResourceAsStream("image/black_pawn.png"));
 
-    public void wallButtonPressed(ActionEvent actionEvent) {
-        wallButtonPressed = 2;
+    public void wallButtonPressed() {
+        wallButtonPlacementCounter = 2;
     }
 
     public void buttonPressed(ActionEvent actionEvent) {
@@ -292,32 +291,25 @@ public class TwoPlayerGameScreenController implements Initializable {
         int X2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[1]);
         int Y2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[2]);
 
-        if("".equals(pressedButton.getText()) == false) {
+        if ("".equals(pressedButton.getText()) == false || pressedButton == playerOnePosition || pressedButton == playerTwoPosition) {
             return;
         }
 
         if (playerOneTurn) {
-            if (wallButtonPressed != 0 && playerOneWalls != 0 && pressedButton != playerOnePosition && pressedButton != playerTwoPosition) {
+            if (wallButtonPlacementCounter != 0 && playerOneWalls != 0 && pressedButton != playerOnePosition && pressedButton != playerTwoPosition) {
                 pressedButton.setText("X");
-                wallButtonPressed--;
+                wallButtonPlacementCounter--;
                 playerOneWalls--;
 
-                if (wallButtonPressed == 0) {
+                if (wallButtonPlacementCounter == 0) {
                     playerOneTurn = false;
-                    wallPlacementFinished = true;
                 }
 
                 return;
             }
 
-            if (pressedButton == playerTwoPosition) {
-                playerOneTurn = true;
-                return;
-            }
-
             if (X1 == 1) {
                 if (pressedButton == gameBoard[0][Y1]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                     announceWinner();
                 }
@@ -325,7 +317,6 @@ public class TwoPlayerGameScreenController implements Initializable {
 
             if (X1 == 10 && Y1 == 10) {
                 if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1 - 1][Y1]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                 }
                 else {
@@ -334,7 +325,6 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
             else if (X1 == 10 && Y1 == 0) {
                 if (pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                 }
                 else {
@@ -343,7 +333,6 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
             else if (X1 == 10) {
                 if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                 }
                 else {
@@ -352,7 +341,6 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
             else if (Y1 == 10) {
                 if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1 - 1][Y1] || pressedButton == gameBoard[X1 + 1][Y1]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                 }
                 else {
@@ -361,7 +349,6 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
             else if (Y1 == 0) {
                 if (pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1] || pressedButton == gameBoard[X1 + 1][Y1]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                 }
                 else {
@@ -370,7 +357,6 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
             else {
                 if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1] || pressedButton == gameBoard[X1 + 1][Y1]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                 }
                 else {
@@ -379,27 +365,20 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
         }
         else {
-            if (wallButtonPressed != 0 && playerTwoWalls != 0 && pressedButton != playerOnePosition && pressedButton != playerTwoPosition) {
+            if (wallButtonPlacementCounter != 0 && playerTwoWalls != 0 && pressedButton != playerOnePosition && pressedButton != playerTwoPosition) {
                 pressedButton.setText("X");
-                wallButtonPressed--;
+                wallButtonPlacementCounter--;
                 playerTwoWalls--;
 
-                if (wallButtonPressed == 0) {
+                if (wallButtonPlacementCounter == 0) {
                     playerOneTurn = true;
-                    wallPlacementFinished = true;
                 }
 
                 return;
             }
 
-            if (pressedButton == playerOnePosition) {
-                playerOneTurn = false;
-                return;
-            }
-
             if (X2 == 9) {
                 if (pressedButton == gameBoard[10][Y2]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                     announceWinner();
                 }
@@ -407,7 +386,6 @@ public class TwoPlayerGameScreenController implements Initializable {
 
             if (X2 == 0 && Y2 == 10) {
                 if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                 }
                 else {
@@ -416,7 +394,6 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
             else if (X2 == 0 && Y2 == 0) {
                 if (pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                 }
                 else {
@@ -425,7 +402,6 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
             else if (X2 == 0) {
                 if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                 }
                 else {
@@ -434,7 +410,6 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
             else if (Y2 == 10) {
                 if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                 }
                 else {
@@ -443,7 +418,6 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
             else if (Y2 == 0) {
                 if (pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                 }
                 else {
@@ -452,7 +426,6 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
             else {
                 if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
-                    checkPreviouslyClickedButtons();
                     applyPlayerInput();
                 }
                 else {
@@ -460,8 +433,6 @@ public class TwoPlayerGameScreenController implements Initializable {
                 }
             }
         }
-
-        wallPlacementFinished = false;
     }
 
     private void announceWinner() {
@@ -490,38 +461,31 @@ public class TwoPlayerGameScreenController implements Initializable {
         startTwoPlayerGame();
     }
 
-    private void checkPreviouslyClickedButtons() {
-        if (listOfPressedButtons.size() != 0 && !wallPlacementFinished) {
-            listOfPressedButtons.get(0).setGraphic(null);
-            listOfPressedButtons.remove(0);
-        }
-        else if (listOfPressedButtons.size() != 0 && wallPlacementFinished) {
-            listOfPressedButtons.get(1).setGraphic(null);
-            listOfPressedButtons.remove(1);
-        }
-    }
-
     private void applyPlayerInput() {
         if (playerOneTurn) {
             pressedButton.setGraphic(new ImageView(whitePawn));
             playerOnePosition = pressedButton;
+            playerOnePreviousPosition.setGraphic(null);
+            playerOnePreviousPosition = playerOnePosition;
             playerOneTurn = false;
         }
         else {
             pressedButton.setGraphic(new ImageView(blackPawn));
             playerTwoPosition = pressedButton;
+            playerTwoPreviousPosition.setGraphic(null);
+            playerTwoPreviousPosition = playerTwoPosition;
             playerOneTurn = true;
         }
 
         turnCounter++;
-        listOfPressedButtons.add(pressedButton);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         playerOneTurn = true;
-        wallPlacementFinished = false;
-        wallButtonPressed = 0;
+        wallButtonPlacementCounter = 0;
+        playerOneWalls = 10;
+        playerTwoWalls = 10;
         turnCounter = 0;
 
         gameBoard = new Button[GAME_BOARD_HEIGHT][GAME_BOARD_WIDTH];
@@ -654,8 +618,8 @@ public class TwoPlayerGameScreenController implements Initializable {
         button_0_5.setGraphic(new ImageView(blackPawn));
         button_10_5.setGraphic(new ImageView(whitePawn));
 
-        listOfPressedButtons.add(playerOnePosition);
-        listOfPressedButtons.add(playerTwoPosition);
+        playerOnePreviousPosition = playerOnePosition;
+        playerTwoPreviousPosition = playerTwoPosition;
     }
 
     public void startTwoPlayerGame() {
