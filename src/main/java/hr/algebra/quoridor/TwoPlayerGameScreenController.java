@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class TwoPlayerGameScreenController implements Initializable {
@@ -268,15 +269,15 @@ public class TwoPlayerGameScreenController implements Initializable {
     private static int playerOneWalls;
     private static int playerTwoWalls;
     private Boolean playerOneTurn;
-    private Button gameBoard[][];
+    private Button[][] gameBoard;
     private Button playerOnePosition;
     private Button playerOnePreviousPosition;
     private Button playerTwoPosition;
     private Button playerTwoPreviousPosition;
     private Button pressedButton;
 
-    private Image whitePawn = new Image(getClass().getResourceAsStream("image/white_pawn.png"));
-    private Image blackPawn = new Image(getClass().getResourceAsStream("image/black_pawn.png"));
+    private final Image whitePawn = new Image(Objects.requireNonNull(getClass().getResourceAsStream("image/white_pawn.png")));
+    private final Image blackPawn = new Image(Objects.requireNonNull(getClass().getResourceAsStream("image/black_pawn.png")));
 
     public void wallButtonPressed() {
         wallButtonPlacementCounter = 2;
@@ -291,12 +292,12 @@ public class TwoPlayerGameScreenController implements Initializable {
         int X2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[1]);
         int Y2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[2]);
 
-        if ("".equals(pressedButton.getText()) == false || pressedButton == playerOnePosition || pressedButton == playerTwoPosition) {
+        if (!"".equals(pressedButton.getText()) || pressedButton == playerOnePosition || pressedButton == playerTwoPosition) {
             return;
         }
 
         if (playerOneTurn) {
-            if (wallButtonPlacementCounter != 0 && playerOneWalls != 0 && pressedButton != playerOnePosition && pressedButton != playerTwoPosition) {
+            if (wallButtonPlacementCounter != 0 && playerOneWalls != 0 && checkInvalidWallPlacement() == 0) {
                 pressedButton.setText("X");
                 wallButtonPlacementCounter--;
                 playerOneWalls--;
@@ -365,7 +366,7 @@ public class TwoPlayerGameScreenController implements Initializable {
             }
         }
         else {
-            if (wallButtonPlacementCounter != 0 && playerTwoWalls != 0 && pressedButton != playerOnePosition && pressedButton != playerTwoPosition) {
+            if (wallButtonPlacementCounter != 0 && playerTwoWalls != 0 && checkInvalidWallPlacement() == 0) {
                 pressedButton.setText("X");
                 wallButtonPlacementCounter--;
                 playerTwoWalls--;
@@ -435,6 +436,20 @@ public class TwoPlayerGameScreenController implements Initializable {
         }
     }
 
+    private int checkInvalidWallPlacement() {
+        if (
+                pressedButton == button_0_0 || pressedButton == button_0_1 || pressedButton == button_0_2 || pressedButton == button_0_3 || pressedButton == button_0_4 ||
+                pressedButton == button_0_5 || pressedButton == button_0_6 || pressedButton == button_0_7 || pressedButton == button_0_8 || pressedButton == button_0_9 ||
+                pressedButton == button_0_10 || pressedButton == button_10_0 || pressedButton == button_10_1 || pressedButton == button_10_2 || pressedButton == button_10_3 ||
+                pressedButton == button_10_4 || pressedButton == button_10_5 || pressedButton == button_10_6 || pressedButton == button_10_7 || pressedButton == button_10_8 ||
+                pressedButton == button_10_9 || pressedButton == button_10_10
+        ) {
+            return 1;
+        }
+
+        return 0;
+    }
+
     private void announceWinner() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("GAME OVER");
@@ -484,8 +499,8 @@ public class TwoPlayerGameScreenController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         playerOneTurn = true;
         wallButtonPlacementCounter = 0;
-        playerOneWalls = 10;
-        playerTwoWalls = 10;
+        playerOneWalls = 8;
+        playerTwoWalls = 8;
         turnCounter = 0;
 
         gameBoard = new Button[GAME_BOARD_HEIGHT][GAME_BOARD_WIDTH];
