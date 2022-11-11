@@ -268,6 +268,8 @@ public class TwoPlayerGameScreenController implements Initializable {
     private static int wallButtonPlacementCounter;
     private static int playerOneWalls;
     private static int playerTwoWalls;
+    private static int X_wall;
+    private static int Y_wall;
     private Boolean playerOneTurn;
     private Button[][] gameBoard;
     private Button playerOnePosition;
@@ -275,6 +277,7 @@ public class TwoPlayerGameScreenController implements Initializable {
     private Button playerTwoPosition;
     private Button playerTwoPreviousPosition;
     private Button pressedButton;
+    private Button pressedButtonWall;
 
     private final Image whitePawn = new Image(Objects.requireNonNull(getClass().getResourceAsStream("image/white_pawn.png")));
     private final Image blackPawn = new Image(Objects.requireNonNull(getClass().getResourceAsStream("image/black_pawn.png")));
@@ -286,28 +289,48 @@ public class TwoPlayerGameScreenController implements Initializable {
     public void buttonPressed(ActionEvent actionEvent) {
         pressedButton = (Button)actionEvent.getSource();
 
-        int X1 = Integer.parseInt(playerOnePosition.getId().split("_", 3)[1]);
-        int Y1 = Integer.parseInt(playerOnePosition.getId().split("_", 3)[2]);
-
-        int X2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[1]);
-        int Y2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[2]);
-
         if (!"".equals(pressedButton.getText()) || pressedButton == playerOnePosition || pressedButton == playerTwoPosition) {
             return;
         }
 
         if (playerOneTurn) {
             if (wallButtonPlacementCounter != 0 && playerOneWalls != 0 && checkInvalidWallPlacement() == 0) {
-                pressedButton.setText("X");
-                wallButtonPlacementCounter--;
-                playerOneWalls--;
+                pressedButtonWall = pressedButton;
 
-                if (wallButtonPlacementCounter == 0) {
-                    playerOneTurn = false;
+                if (wallButtonPlacementCounter == 2) {
+                    pressedButton.setText("X");
+                    X_wall = Integer.parseInt(pressedButtonWall.getId().split("_", 3)[1]);
+                    Y_wall = Integer.parseInt(pressedButtonWall.getId().split("_", 3)[2]);
+                    wallButtonPlacementCounter--;
+                    playerOneWalls--;
+                    return;
                 }
+                else if (wallButtonPlacementCounter == 1) {
+                    if (Y_wall == 0) {
+                        if (pressedButton == gameBoard[X_wall][Y_wall + 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
+                            pressedButton.setText("X");
+                        }
+                    }
+                    else if (Y_wall == 10) {
+                        if (pressedButton == gameBoard[X_wall][Y_wall - 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
+                            pressedButton.setText("X");
+                        }
+                    }
+                    else {
+                        if (pressedButton == gameBoard[X_wall][Y_wall + 1] || pressedButton == gameBoard[X_wall][Y_wall - 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
+                            pressedButton.setText("X");
+                            wallButtonPlacementCounter--;
+                            playerOneWalls--;
+                            playerOneTurn = false;
+                        }
+                    }
 
-                return;
+                    return;
+                }
             }
+
+            int X1 = Integer.parseInt(playerOnePosition.getId().split("_", 3)[1]);
+            int Y1 = Integer.parseInt(playerOnePosition.getId().split("_", 3)[2]);
 
             if (X1 == 1) {
                 if (pressedButton == gameBoard[0][Y1]) {
@@ -367,16 +390,42 @@ public class TwoPlayerGameScreenController implements Initializable {
         }
         else {
             if (wallButtonPlacementCounter != 0 && playerTwoWalls != 0 && checkInvalidWallPlacement() == 0) {
-                pressedButton.setText("X");
-                wallButtonPlacementCounter--;
-                playerTwoWalls--;
+                pressedButtonWall = pressedButton;
 
-                if (wallButtonPlacementCounter == 0) {
-                    playerOneTurn = true;
+                if (wallButtonPlacementCounter == 2) {
+                    pressedButton.setText("X");
+                    X_wall = Integer.parseInt(pressedButtonWall.getId().split("_", 3)[1]);
+                    Y_wall = Integer.parseInt(pressedButtonWall.getId().split("_", 3)[2]);
+                    wallButtonPlacementCounter--;
+                    playerTwoWalls--;
+                    return;
                 }
+                else if (wallButtonPlacementCounter == 1) {
+                    if (Y_wall == 0) {
+                        if (pressedButton == gameBoard[X_wall][Y_wall + 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
+                            pressedButton.setText("X");
+                        }
+                    }
+                    else if (Y_wall == 10) {
+                        if (pressedButton == gameBoard[X_wall][Y_wall - 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
+                            pressedButton.setText("X");
+                        }
+                    }
+                    else {
+                        if (pressedButton == gameBoard[X_wall][Y_wall + 1] || pressedButton == gameBoard[X_wall][Y_wall - 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
+                            pressedButton.setText("X");
+                            wallButtonPlacementCounter--;
+                            playerTwoWalls--;
+                            playerOneTurn = true;
+                        }
+                    }
 
-                return;
+                    return;
+                }
             }
+
+            int X2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[1]);
+            int Y2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[2]);
 
             if (X2 == 9) {
                 if (pressedButton == gameBoard[10][Y2]) {
