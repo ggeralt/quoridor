@@ -15,7 +15,6 @@
               <MenuItem mnemonicParsing="false" onAction="#startTwoPlayerGame" text="Start new game" />
                   <MenuItem mnemonicParsing="false" text="Save" />
                   <MenuItem mnemonicParsing="false" text="Load" />
-                  <MenuItem mnemonicParsing="false" text="Exit" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
