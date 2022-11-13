@@ -1,5 +1,6 @@
 package hr.algebra.quoridor;
 
+import hr.algebra.quoridor.model.SerializableButton;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,15 +11,14 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -680,6 +680,31 @@ public class TwoPlayerGameScreenController implements Initializable {
         }
 
         return methodParameters.toString();
+    }
+
+    // TODO: replace walls and pawns with strings so that the game can be serialized
+    public void saveGame() throws IOException {
+        List<SerializableButton> serializableButtonList = new ArrayList<>();
+
+        for (int i = 0; i < GAME_BOARD_WIDTH; i++) {
+            for (int j = 0; j < GAME_BOARD_HEIGHT; j++) {
+                serializableButtonList.add(new SerializableButton(i, j, (ImageView)gameBoard[i][j].getGraphic()));
+            }
+        }
+
+        try(ObjectOutputStream serializer = new ObjectOutputStream(new FileOutputStream("savedGame.ser"))) {
+            serializer.writeObject(serializableButtonList);
+        }
+    }
+
+    public void loadGame() throws IOException, ClassNotFoundException {
+        try(ObjectInputStream deserializer = new ObjectInputStream(new FileInputStream("savedGame.ser"))) {
+            List<SerializableButton> serializableButtonList = (List<SerializableButton>)deserializer.readObject();
+
+            for (SerializableButton serializableButton : serializableButtonList) {
+                gameBoard[serializableButton.getPositionX()][serializableButton.getPositionY()].setGraphic(serializableButton.getImageView());
+            }
+        }
     }
 
     @Override
