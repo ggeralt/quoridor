@@ -10,10 +10,19 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 public class TwoPlayerGameScreenController implements Initializable {
     @FXML
@@ -259,15 +268,16 @@ public class TwoPlayerGameScreenController implements Initializable {
     @FXML
     private Button button_10_10;
 
-    private static boolean playerOneTurn;
     private static final int GAME_BOARD_WIDTH = 11;
     private static final int GAME_BOARD_HEIGHT = 11;
+    private static final String CLASS_EXTENSION = ".class";
     private static int turnCounter;
     private static int wallButtonPlacementCounter;
     private static int playerOneWalls;
     private static int playerTwoWalls;
     private static int X_wall;
     private static int Y_wall;
+    private boolean playerOneTurn;
     private Button playerOnePosition;
     private Button playerOnePreviousPosition;
     private Button playerTwoPosition;
@@ -486,9 +496,11 @@ public class TwoPlayerGameScreenController implements Initializable {
         System.out.println("Number of wins (" + TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName() + "): "
                 + TwoPlayerStartGameScreenController.getPlayerTwoDetails().getNumberOfWins());
 
-        turnCounter = 0;
-
-        startTwoPlayerGame();
+        try {
+            startTwoPlayerGame();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void applyPlayerInput() {
@@ -508,6 +520,166 @@ public class TwoPlayerGameScreenController implements Initializable {
         }
 
         turnCounter++;
+    }
+
+    public void generateDocumentation() {
+        File documentationFile = new File("documentation.html");
+
+        try {
+            FileWriter fileWriter = new FileWriter(documentationFile);
+
+            fileWriter.write("<!DOCTYPE html>");
+            fileWriter.write("<html>");
+            fileWriter.write("<head>");
+            fileWriter.write("<title>Project documentation</title>");
+            fileWriter.write("</head>");
+            fileWriter.write("<body>");
+            fileWriter.write("<h1>Project documentation</h1>");
+            fileWriter.write("<b><p>Class list:</p></b>");
+
+            List<Path> paths = Files.walk(Paths.get("."))
+                    .filter(path -> path
+                            .getFileName()
+                            .toString()
+                            .endsWith(CLASS_EXTENSION))
+                    .toList();
+
+            for (Path path : paths) {
+                boolean startBuildingPath = false;
+                String[] tokens = path.toString().split(Pattern.quote(System.getProperty("file.separator")));
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for (String token : tokens) {
+                    if ("classes".equals(token)) {
+                        startBuildingPath = true;
+                        continue;
+                    }
+
+                    if (startBuildingPath) {
+                        if (token.endsWith(CLASS_EXTENSION)) {
+                            stringBuilder.append(token, 0, token.indexOf("."));
+                        }
+                        else {
+                            stringBuilder.append(token);
+                            stringBuilder.append(".");
+                        }
+                    }
+                }
+
+                if ("module-info".equals(stringBuilder.toString())) {
+                    continue;
+                }
+
+                try {
+                    Class<?> c = Class.forName(stringBuilder.toString());
+                    StringBuilder classFieldString = new StringBuilder();
+
+                    fileWriter.write("<h2>" + Modifier.toString(c.getModifiers()) + " " + c.getName() + "</h2>");
+
+                    for (Field classField : c.getDeclaredFields()) {
+                        Annotation[] annotations = classField.getAnnotations();
+
+                        if (annotations.length != 0) {
+                            for (Annotation annotation : annotations) {
+                                classFieldString.append(annotation.toString());
+                                classFieldString.append("<br />");
+                            }
+                        }
+
+                        classFieldString.append(Modifier.toString(classField.getModifiers()));
+                        classFieldString.append(" ");
+                        classFieldString.append(classField.getType().getSimpleName());
+                        classFieldString.append(" ");
+                        classFieldString.append(classField.getName());
+                        classFieldString.append(" ");
+                        classFieldString.append("<br />");
+                    }
+
+                    fileWriter.write("<h3>Fields</h3>");
+
+                    fileWriter.write("<h4>" + classFieldString + "</h4>");
+
+                    Constructor[] constructors = c.getConstructors();
+
+                    fileWriter.write("<h3>Constructors</h3>");
+
+                    for (Constructor constructor : constructors) {
+                        String constructorParameters = generateDocumentation(constructor);
+                        fileWriter.write("<h4>Constructor: "
+                                + Modifier.toString(constructor.getModifiers())
+                                + " " + constructor.getName()
+                                + "(" + constructorParameters + ")"
+                                + "</h4>");
+                    }
+
+                    Method[] methods = c.getMethods();
+
+                    fileWriter.write("<h3>Methods</h3>");
+
+                    for (Method method : methods) {
+                        String methodParameters = generateDocumentation(method);
+                        StringBuilder exceptionsStringBuilder = new StringBuilder();
+
+                        for (int i = 0; i < method.getExceptionTypes().length; i++) {
+                            if (exceptionsStringBuilder.isEmpty()) {
+                                exceptionsStringBuilder.append(" throws ");
+                            }
+
+                            Class<?> exceptionClass = method.getExceptionTypes()[i];
+                            exceptionsStringBuilder.append(exceptionClass.getSimpleName());
+
+                            if (i < method.getExceptionTypes().length - 1) {
+                                exceptionsStringBuilder.append(", ");
+                            }
+                        }
+
+                        fileWriter.write("<h4>Method: " + Modifier.toString(method.getModifiers())
+                                + " " + method.getReturnType().getSimpleName()
+                                + " " + method.getName() + "(" + methodParameters + ")"
+                                + " " + exceptionsStringBuilder
+                                + "</h4>");
+                    }
+
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            fileWriter.write("</body>");
+            fileWriter.write("</html>");
+            fileWriter.close();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("generateDocumentation() ERROR");
+            alert.setHeaderText("Cannot find the files.");
+            alert.setContentText("The class files cannot be accessed.");
+        }
+
+        System.out.println("Project documentation successfully generated!");
+    }
+
+    private <T extends Executable> String generateDocumentation(T executable) {
+        Parameter[] parameters = executable.getParameters();
+        StringBuilder methodParameters = new StringBuilder();
+
+        for (int i = 0; i < parameters.length; i++) {
+            String modifierString = Modifier.toString(parameters[i].getModifiers());
+
+            if (!modifierString.isEmpty()) {
+                methodParameters.append(modifierString);
+                methodParameters.append(" ");
+            }
+
+            methodParameters.append(parameters[i].getType().getSimpleName());
+            methodParameters.append(" ");
+            methodParameters.append(parameters[i].getName());
+
+            if (i < (parameters.length - 1)) {
+                methodParameters.append(", ");
+            }
+        }
+
+        return methodParameters.toString();
     }
 
     @Override
@@ -652,16 +824,10 @@ public class TwoPlayerGameScreenController implements Initializable {
         playerTwoPreviousPosition = playerTwoPosition;
     }
 
-    public void startTwoPlayerGame() {
+    public void startTwoPlayerGame() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(QuoridorApplication.class.getResource("twoPlayerGameScreen.fxml"));
-        Scene scene = null;
+        Scene scene = new Scene(fxmlLoader.load(), 1154, 690);
         Stage stage = QuoridorApplication.getMainStage();
-
-        try {
-            scene = new Scene(fxmlLoader.load(), 1154, 690);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
         stage.setTitle("Quoridor");
         stage.setScene(scene);

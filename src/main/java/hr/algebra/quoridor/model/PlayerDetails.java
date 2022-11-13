@@ -1,7 +1,6 @@
 package hr.algebra.quoridor.model;
 
 public class PlayerDetails {
-
     private String playerName;
     private Integer numberOfWins;
 

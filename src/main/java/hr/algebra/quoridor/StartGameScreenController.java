@@ -24,10 +24,8 @@ public class StartGameScreenController implements Initializable {
         fourPlayerRadioButton.setToggleGroup(radioButtonGroup);
     }
 
-    public void startGame() {
+    public void startGame() throws IOException {
         FXMLLoader fxmlLoader = null;
-        Scene scene = null;
-        Stage stage = QuoridorApplication.getMainStage();
 
         if (twoPlayerRadioButton.isSelected() || !twoPlayerRadioButton.isSelected() && !fourPlayerRadioButton.isSelected()) {
             fxmlLoader = new FXMLLoader(QuoridorApplication.class.getResource("twoPlayerStartGameScreen.fxml"));
@@ -36,11 +34,8 @@ public class StartGameScreenController implements Initializable {
             fxmlLoader = new FXMLLoader(QuoridorApplication.class.getResource("fourPlayerStartGameScreen.fxml"));
         }
 
-        try {
-            scene = new Scene(fxmlLoader.load(), 600, 400);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        Stage stage = QuoridorApplication.getMainStage();
 
         stage.setTitle("Quoridor");
         stage.setScene(scene);

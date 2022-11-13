@@ -17,28 +17,20 @@ public class TwoPlayerStartGameScreenController {
     private static PlayerDetails playerOneDetails;
     private static PlayerDetails playerTwoDetails;
 
-    public void startTwoPlayerGame() {
-        FXMLLoader fxmlLoader = null;
-        Scene scene = null;
+    public void startTwoPlayerGame() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(QuoridorApplication.class.getResource("twoPlayerGameScreen.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 1154, 690);
         Stage stage = QuoridorApplication.getMainStage();
+
+        stage.setTitle("Quoridor");
+        stage.setScene(scene);
+        stage.show();
 
         String playerOneName = playerOneNameTextField.getText();
         String playerTwoName = playerTwoNameTextField.getText();
 
         playerOneDetails = new PlayerDetails(playerOneName);
         playerTwoDetails = new PlayerDetails(playerTwoName);
-
-        fxmlLoader = new FXMLLoader(QuoridorApplication.class.getResource("twoPlayerGameScreen.fxml"));
-
-        try {
-            scene = new Scene(fxmlLoader.load(), 1154, 690);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        stage.setTitle("Quoridor");
-        stage.setScene(scene);
-        stage.show();
     }
 
     public static PlayerDetails getPlayerOneDetails() {
