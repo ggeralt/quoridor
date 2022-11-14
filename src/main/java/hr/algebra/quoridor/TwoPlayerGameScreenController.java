@@ -899,7 +899,7 @@ public class TwoPlayerGameScreenController implements Initializable {
 
     public void startTwoPlayerGame() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(QuoridorApplication.class.getResource("twoPlayerGameScreen.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1154, 690);
+        Scene scene = new Scene(fxmlLoader.load(), 1000, 690);
         Stage stage = QuoridorApplication.getMainStage();
 
         stage.setTitle("Quoridor");
