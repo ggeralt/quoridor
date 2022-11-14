@@ -1,15 +1,20 @@
 package hr.algebra.quoridor;
 
 import hr.algebra.quoridor.model.SerializableButton;
+import hr.algebra.quoridor.util.AlertUtils;
+import hr.algebra.quoridor.util.FXMLUtils;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.stage.Stage;
+import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -19,8 +24,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
+
+import static javafx.scene.control.Alert.AlertType.ERROR;
+import static javafx.scene.control.Alert.AlertType.INFORMATION;
 
 public class TwoPlayerGameScreenController implements Initializable {
     @FXML
@@ -31,6 +40,12 @@ public class TwoPlayerGameScreenController implements Initializable {
     private Label player_one_score;
     @FXML
     private Label player_two_score;
+    @FXML
+    private Label player_turn_name;
+    @FXML
+    private Label player_one_walls;
+    @FXML
+    private Label player_two_walls;
     @FXML
     private Label turn_counter;
     @FXML
@@ -275,11 +290,15 @@ public class TwoPlayerGameScreenController implements Initializable {
     private Button button_10_9;
     @FXML
     private Button button_10_10;
+    @FXML
+    private ListView<String> player_moves;
 
     private static final int GAME_BOARD_WIDTH = 11;
     private static final int GAME_BOARD_HEIGHT = 11;
     private static final String CLASS_EXTENSION = ".class";
     private static final String SAVED_GAME_FILE = "savedGame.ser";
+    private static final String WHITE_PAWN = "♙";
+    private static final String BLACK_PAWN = "♟";
     private static int wallButtonPlacementCounter;
     private static int playerOneWalls;
     private static int playerTwoWalls;
@@ -292,10 +311,31 @@ public class TwoPlayerGameScreenController implements Initializable {
     private Button playerTwoPosition;
     private Button playerTwoPreviousPosition;
     private Button pressedButton;
+    private Button firstPlacedWall;
     private Button[][] gameBoard;
+    private final ObservableList<String> playerMovesObservable = FXCollections.observableArrayList();
+
+    private final Image wall = new Image(Objects.requireNonNull(getClass().getResourceAsStream("image/wall.png")));
 
     public void wallButtonPressed() {
-        wallButtonPlacementCounter = 2;
+        if (wallButtonPlacementCounter == 0 && ((playerOneTurn && playerOneWalls != 0) || (!playerOneTurn && playerTwoWalls != 0))) {
+            for (int i = 0; i < GAME_BOARD_WIDTH; i++) {
+                for (int j = 0; j < GAME_BOARD_HEIGHT; j++) {
+                    if
+                    (       gameBoard[i][j].getText().isEmpty() &&
+                            gameBoard[i][j] != gameBoard[10][j] &&
+                            gameBoard[i][j] != gameBoard[0][j] &&
+                            gameBoard[i][j] != gameBoard[i][10] &&
+                            gameBoard[i][j] != gameBoard[i][0]
+                    )
+                    {
+                        gameBoard[i][j].setGraphic(new ImageView(wall));
+                    }
+                }
+            }
+
+            wallButtonPlacementCounter = 2;
+        }
     }
 
     public void buttonPressed(ActionEvent actionEvent) {
@@ -308,171 +348,224 @@ public class TwoPlayerGameScreenController implements Initializable {
         if (playerOneTurn) {
             if (wallButtonPlacementCounter != 0 && playerOneWalls != 0 && checkInvalidWallPlacement()) {
                 if (wallButtonPlacementCounter == 2) {
-                    pressedButton.setText("X");
-                    X_wall = Integer.parseInt(pressedButton.getId().split("_", 3)[1]);
-                    Y_wall = Integer.parseInt(pressedButton.getId().split("_", 3)[2]);
-                    wallButtonPlacementCounter--;
-                    playerOneWalls--;
-                    turnCounter++;
+                    setFirstWall();
                 }
                 else {
                     if (Y_wall == 0) {
                         if (pressedButton == gameBoard[X_wall][Y_wall + 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
-                            pressedButton.setText("X");
-                            wallButtonPlacementCounter--;
-                            playerOneWalls--;
-                            playerOneTurn = false;
+                            setSecondWall();
                         }
                     }
                     else if (Y_wall == 10) {
                         if (pressedButton == gameBoard[X_wall][Y_wall - 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
-                            pressedButton.setText("X");
-                            wallButtonPlacementCounter--;
-                            playerOneWalls--;
-                            playerOneTurn = false;
+                            setSecondWall();
                         }
                     }
                     else {
                         if (pressedButton == gameBoard[X_wall][Y_wall + 1] || pressedButton == gameBoard[X_wall][Y_wall - 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
-                            pressedButton.setText("X");
-                            wallButtonPlacementCounter--;
-                            playerOneWalls--;
-                            playerOneTurn = false;
+                            setSecondWall();
                         }
                     }
                 }
 
                 turn_counter.setText(String.valueOf(turnCounter));
+                player_moves.scrollTo(player_moves.getItems().size());
 
                 return;
             }
 
-            int X1 = Integer.parseInt(playerOnePosition.getId().split("_", 3)[1]);
-            int Y1 = Integer.parseInt(playerOnePosition.getId().split("_", 3)[2]);
+            if (wallButtonPlacementCounter == 0 || (wallButtonPlacementCounter == 2 && playerOneWalls == 0)) {
+                int X1 = Integer.parseInt(playerOnePosition.getId().split("_", 3)[1]);
+                int Y1 = Integer.parseInt(playerOnePosition.getId().split("_", 3)[2]);
 
-            if (X1 == 1) {
-                if (pressedButton == gameBoard[0][Y1]) {
-                    applyPlayerInput();
-                    announceWinner();
-                }
-            }
+                wallButtonPlacementCounter = 0;
 
-            if (X1 == 10 && Y1 == 10) {
-                if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1 - 1][Y1]) {
-                    applyPlayerInput();
+                if (X1 == 1) {
+                    if (pressedButton == gameBoard[0][Y1]) {
+                        applyPlayerInput();
+                        announceWinner();
+                    }
                 }
-            }
-            else if (X1 == 10 && Y1 == 0) {
-                if (pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1]) {
-                    applyPlayerInput();
+
+                if (X1 == 10 && Y1 == 10) {
+                    if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1 - 1][Y1]) {
+                        applyPlayerInput();
+                    }
                 }
-            }
-            else if (X1 == 10) {
-                if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1]) {
-                    applyPlayerInput();
+                else if (X1 == 10 && Y1 == 0) {
+                    if (pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1]) {
+                        applyPlayerInput();
+                    }
                 }
-            }
-            else if (Y1 == 10) {
-                if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1 - 1][Y1] || pressedButton == gameBoard[X1 + 1][Y1]) {
-                    applyPlayerInput();
+                else if (X1 == 10) {
+                    if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1]) {
+                        applyPlayerInput();
+                    }
                 }
-            }
-            else if (Y1 == 0) {
-                if (pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1] || pressedButton == gameBoard[X1 + 1][Y1]) {
-                    applyPlayerInput();
+                else if (Y1 == 10) {
+                    if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1 - 1][Y1] || pressedButton == gameBoard[X1 + 1][Y1]) {
+                        applyPlayerInput();
+                    }
                 }
-            }
-            else {
-                if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1] || pressedButton == gameBoard[X1 + 1][Y1]) {
-                    applyPlayerInput();
+                else if (Y1 == 0) {
+                    if (pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1] || pressedButton == gameBoard[X1 + 1][Y1]) {
+                        applyPlayerInput();
+                    }
+                }
+                else {
+                    if (pressedButton == gameBoard[X1][Y1 - 1] || pressedButton == gameBoard[X1][Y1 + 1] || pressedButton == gameBoard[X1 - 1][Y1] || pressedButton == gameBoard[X1 + 1][Y1]) {
+                        applyPlayerInput();
+                    }
                 }
             }
         }
         else {
             if (wallButtonPlacementCounter != 0 && playerTwoWalls != 0 && checkInvalidWallPlacement()) {
                 if (wallButtonPlacementCounter == 2) {
-                    pressedButton.setText("X");
-                    X_wall = Integer.parseInt(pressedButton.getId().split("_", 3)[1]);
-                    Y_wall = Integer.parseInt(pressedButton.getId().split("_", 3)[2]);
-                    wallButtonPlacementCounter--;
-                    playerTwoWalls--;
-                    turnCounter++;
+                    setFirstWall();
                 }
                 else {
                     if (Y_wall == 0) {
                         if (pressedButton == gameBoard[X_wall][Y_wall + 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
-                            pressedButton.setText("X");
-                            wallButtonPlacementCounter--;
-                            playerTwoWalls--;
-                            playerOneTurn = true;
+                            setSecondWall();
                         }
                     }
                     else if (Y_wall == 10) {
                         if (pressedButton == gameBoard[X_wall][Y_wall - 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
-                            pressedButton.setText("X");
-                            wallButtonPlacementCounter--;
-                            playerTwoWalls--;
-                            playerOneTurn = true;
+                            setSecondWall();
                         }
                     }
                     else {
                         if (pressedButton == gameBoard[X_wall][Y_wall + 1] || pressedButton == gameBoard[X_wall][Y_wall - 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
-                            pressedButton.setText("X");
-                            wallButtonPlacementCounter--;
-                            playerTwoWalls--;
-                            playerOneTurn = true;
+                            setSecondWall();
                         }
                     }
                 }
 
                 turn_counter.setText(String.valueOf(turnCounter));
+                player_moves.scrollTo(player_moves.getItems().size());
 
                 return;
             }
 
-            int X2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[1]);
-            int Y2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[2]);
+            if (wallButtonPlacementCounter == 0 || (wallButtonPlacementCounter == 2 && playerTwoWalls == 0)) {
+                int X2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[1]);
+                int Y2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[2]);
 
-            if (X2 == 9) {
-                if (pressedButton == gameBoard[10][Y2]) {
-                    applyPlayerInput();
-                    announceWinner();
-                }
-            }
+                wallButtonPlacementCounter = 0;
 
-            if (X2 == 0 && Y2 == 10) {
-                if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
-                    applyPlayerInput();
+                if (X2 == 9) {
+                    if (pressedButton == gameBoard[10][Y2]) {
+                        applyPlayerInput();
+                        announceWinner();
+                    }
                 }
-            }
-            else if (X2 == 0 && Y2 == 0) {
-                if (pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
-                    applyPlayerInput();
+
+                if (X2 == 0 && Y2 == 10) {
+                    if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
+                        applyPlayerInput();
+                    }
                 }
-            }
-            else if (X2 == 0) {
-                if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
-                    applyPlayerInput();
+                else if (X2 == 0 && Y2 == 0) {
+                    if (pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
+                        applyPlayerInput();
+                    }
                 }
-            }
-            else if (Y2 == 10) {
-                if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
-                    applyPlayerInput();
+                else if (X2 == 0) {
+                    if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
+                        applyPlayerInput();
+                    }
                 }
-            }
-            else if (Y2 == 0) {
-                if (pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
-                    applyPlayerInput();
+                else if (Y2 == 10) {
+                    if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
+                        applyPlayerInput();
+                    }
                 }
-            }
-            else {
-                if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
-                    applyPlayerInput();
+                else if (Y2 == 0) {
+                    if (pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
+                        applyPlayerInput();
+                    }
+                }
+                else {
+                    if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
+                        applyPlayerInput();
+                    }
                 }
             }
         }
 
         turn_counter.setText(String.valueOf(turnCounter));
+        player_moves.scrollTo(player_moves.getItems().size());
+    }
+
+    private void setFirstWall() {
+        firstPlacedWall = pressedButton;
+        X_wall = Integer.parseInt(firstPlacedWall.getId().split("_", 3)[1]);
+        Y_wall = Integer.parseInt(firstPlacedWall.getId().split("_", 3)[2]);
+
+        for (int i = 0; i < GAME_BOARD_WIDTH; i++) {
+            for (int j = 0; j < GAME_BOARD_HEIGHT; j++) {
+                if
+                (       gameBoard[i][j].getText().isEmpty() &&
+                        gameBoard[i][j] != gameBoard[10][j] &&
+                        gameBoard[i][j] != gameBoard[0][j] &&
+                        gameBoard[i][j] != gameBoard[i][10] &&
+                        gameBoard[i][j] != gameBoard[i][0] &&
+                        gameBoard[i][j] != gameBoard[X_wall][Y_wall - 1] &&
+                        gameBoard[i][j] != gameBoard[X_wall][Y_wall + 1] &&
+                        gameBoard[i][j] != gameBoard[X_wall - 1][Y_wall] &&
+                        gameBoard[i][j] != gameBoard[X_wall + 1][Y_wall]
+
+                ) {
+                    gameBoard[i][j].setGraphic(null);
+                    firstPlacedWall.setText("");
+                }
+            }
+        }
+
+        pressedButton.setText("X");
+        wallButtonPlacementCounter--;
+
+        if (playerOneTurn) {
+            playerOneWalls--;
+            player_one_walls.setText(String.valueOf(playerOneWalls));
+        }
+        else {
+            playerTwoWalls--;
+            player_two_walls.setText(String.valueOf(playerTwoWalls));
+        }
+
+        turnCounter++;
+    }
+
+    private void setSecondWall() {
+        for (int i = 0; i < GAME_BOARD_WIDTH; i++) {
+            for (int j = 0; j < GAME_BOARD_HEIGHT; j++) {
+                if (gameBoard[i][j].getText().isEmpty()) {
+                    gameBoard[i][j].setGraphic(null);
+                }
+            }
+        }
+
+        pressedButton.setText("X");
+        wallButtonPlacementCounter--;
+
+        if (playerOneTurn) {
+            playerMovesObservable.add(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName() + ": " + "WALL: " + firstPlacedWall.getId() + ", " + pressedButton.getId());
+            player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+            playerOneWalls--;
+            player_one_walls.setText(String.valueOf(playerOneWalls));
+            playerOneTurn = false;
+        }
+        else {
+            playerMovesObservable.add(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName() + ": " + "WALL: " + firstPlacedWall.getId() + ", " + pressedButton.getId());
+            player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
+            playerTwoWalls--;
+            player_two_walls.setText(String.valueOf(playerTwoWalls));
+            playerOneTurn = true;
+        }
+
+        player_moves.setItems(playerMovesObservable);
     }
 
     private boolean checkInvalidWallPlacement() {
@@ -487,19 +580,24 @@ public class TwoPlayerGameScreenController implements Initializable {
     }
 
     private void announceWinner() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("GAME OVER");
-
         if(!playerOneTurn) {
-            alert.setContentText("The winner is " + TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
+            AlertUtils.showAlert(
+                    INFORMATION,
+                    "GAME OVER",
+                    null,
+                    "The winner is " + TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
+
             TwoPlayerStartGameScreenController.getPlayerOneDetails().recordWin();
         }
         else {
-            alert.setContentText("The winner is " + TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+            AlertUtils.showAlert(
+                    INFORMATION,
+                    "GAME OVER",
+                    null,
+                    "The winner is " + TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+
             TwoPlayerStartGameScreenController.getPlayerTwoDetails().recordWin();
         }
-
-        alert.showAndWait();
 
         System.out.println("Number of wins (" + TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName() + "): "
                 + TwoPlayerStartGameScreenController.getPlayerOneDetails().getNumberOfWins());
@@ -516,20 +614,25 @@ public class TwoPlayerGameScreenController implements Initializable {
 
     private void applyPlayerInput() {
         if (playerOneTurn) {
-            pressedButton.setText("1");
+            pressedButton.setText(WHITE_PAWN);
             playerOnePosition = pressedButton;
+            playerMovesObservable.add(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName() + ": " + pressedButton.getId());
+            player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
             playerOnePreviousPosition.setText("");
             playerOnePreviousPosition = playerOnePosition;
             playerOneTurn = false;
         }
         else {
-            pressedButton.setText("2");
+            pressedButton.setText(BLACK_PAWN);
             playerTwoPosition = pressedButton;
+            playerMovesObservable.add(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName() + ": " + pressedButton.getId());
+            player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
             playerTwoPreviousPosition.setText("");
             playerTwoPreviousPosition = playerTwoPosition;
             playerOneTurn = true;
         }
 
+        player_moves.setItems(playerMovesObservable);
         turnCounter++;
     }
 
@@ -660,13 +763,18 @@ public class TwoPlayerGameScreenController implements Initializable {
             fileWriter.write("</html>");
             fileWriter.close();
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Documentation generation error");
-            alert.setHeaderText("Cannot find the files.");
-            alert.setContentText("The class files cannot be accessed.");
+            AlertUtils.showAlert(
+                    ERROR,
+                    "Project documentation",
+                    "Cannot find the files",
+                    "The class files cannot be accessed.");
         }
 
-        System.out.println("Project documentation successfully generated!");
+        AlertUtils.showAlert(
+                INFORMATION,
+                "Project documentation",
+                null,
+                "Project documentation successfully generated!");
     }
 
     private <T extends Executable> String generateDocumentation(T executable) {
@@ -704,6 +812,7 @@ public class TwoPlayerGameScreenController implements Initializable {
 
         try(ObjectOutputStream serializer = new ObjectOutputStream(new FileOutputStream(SAVED_GAME_FILE))) {
             serializer.writeObject(serializableButtonList);
+            serializer.writeObject(new ArrayList<String>(playerMovesObservable));
             serializer.writeBoolean(playerOneTurn);
             serializer.writeInt(turnCounter);
             serializer.writeInt(playerOneWalls);
@@ -713,6 +822,12 @@ public class TwoPlayerGameScreenController implements Initializable {
             serializer.writeUTF(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
             serializer.writeUTF(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
         }
+
+        AlertUtils.showAlert(
+                INFORMATION,
+                "Save game",
+                null,
+                "Game successfully saved!");
     }
 
     public void loadGame() throws IOException, ClassNotFoundException {
@@ -720,18 +835,19 @@ public class TwoPlayerGameScreenController implements Initializable {
             List<SerializableButton> serializableButtonList = (List<SerializableButton>)deserializer.readObject();
 
             for (SerializableButton serializableButton : serializableButtonList) {
-                gameBoard[serializableButton.getPositionX()][serializableButton.getPositionY()].setText(serializableButton.getString());
+                gameBoard[serializableButton.positionX()][serializableButton.positionY()].setText(serializableButton.string());
 
-                if (gameBoard[serializableButton.getPositionX()][serializableButton.getPositionY()].getText().equals("1")) {
-                    playerOnePosition = gameBoard[serializableButton.getPositionX()][serializableButton.getPositionY()];
-                    playerOnePreviousPosition = gameBoard[serializableButton.getPositionX()][serializableButton.getPositionY()];
+                if (gameBoard[serializableButton.positionX()][serializableButton.positionY()].getText().equals(WHITE_PAWN)) {
+                    playerOnePosition = gameBoard[serializableButton.positionX()][serializableButton.positionY()];
+                    playerOnePreviousPosition = gameBoard[serializableButton.positionX()][serializableButton.positionY()];
                 }
-                else if (gameBoard[serializableButton.getPositionX()][serializableButton.getPositionY()].getText().equals("2")) {
-                    playerTwoPosition = gameBoard[serializableButton.getPositionX()][serializableButton.getPositionY()];
-                    playerTwoPreviousPosition = gameBoard[serializableButton.getPositionX()][serializableButton.getPositionY()];
+                else if (gameBoard[serializableButton.positionX()][serializableButton.positionY()].getText().equals(BLACK_PAWN)) {
+                    playerTwoPosition = gameBoard[serializableButton.positionX()][serializableButton.positionY()];
+                    playerTwoPreviousPosition = gameBoard[serializableButton.positionX()][serializableButton.positionY()];
                 }
             }
 
+            playerMovesObservable.setAll((List<String>)deserializer.readObject());
             playerOneTurn = deserializer.readBoolean();
             turnCounter = deserializer.readInt();
             playerOneWalls = deserializer.readInt();
@@ -746,15 +862,39 @@ public class TwoPlayerGameScreenController implements Initializable {
             player_two_score.setText(String.valueOf(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getNumberOfWins()));
             player_one_name.setText(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
             player_two_name.setText(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+            player_one_walls.setText(String.valueOf(playerOneWalls));
+            player_two_walls.setText(String.valueOf(playerTwoWalls));
+            player_moves.setItems(playerMovesObservable);
+            player_moves.scrollTo(player_moves.getItems().size());
+
+            if (playerOneTurn) {
+                player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
+            }
+            else {
+                player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+            }
         }
+    }
+
+    public void exitGame() {
+        Platform.exit();
+    }
+
+    public void about() {
+        AlertUtils.showAlert(
+                INFORMATION,
+                "About",
+                "Quoridor",
+                "Made by Jan Šantek, 3RP1");
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         playerOneTurn = true;
+        player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
         wallButtonPlacementCounter = 0;
-        playerOneWalls = 8;
-        playerTwoWalls = 8;
+        playerOneWalls = 6;
+        playerTwoWalls = 6;
         turnCounter = 0;
 
         turn_counter.setText(String.valueOf(turnCounter));
@@ -762,6 +902,8 @@ public class TwoPlayerGameScreenController implements Initializable {
         player_two_score.setText(String.valueOf(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getNumberOfWins()));
         player_one_name.setText(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
         player_two_name.setText(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+        player_one_walls.setText(String.valueOf(playerOneWalls));
+        player_two_walls.setText(String.valueOf(playerTwoWalls));
 
         gameBoard = new Button[GAME_BOARD_WIDTH][GAME_BOARD_HEIGHT];
 
@@ -893,17 +1035,15 @@ public class TwoPlayerGameScreenController implements Initializable {
         playerOnePreviousPosition = gameBoard[10][5];
         playerTwoPreviousPosition = gameBoard[0][5];
 
-        gameBoard[10][5].setText("1");
-        gameBoard[0][5].setText("2");
+        gameBoard[10][5].setText(WHITE_PAWN);
+        gameBoard[0][5].setText(BLACK_PAWN);
     }
 
     public void startTwoPlayerGame() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(QuoridorApplication.class.getResource("twoPlayerGameScreen.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1000, 690);
-        Stage stage = QuoridorApplication.getMainStage();
-
-        stage.setTitle("Quoridor");
-        stage.setScene(scene);
-        stage.show();
+        FXMLUtils.showScreen(
+                "twoPlayerGameScreen.fxml",
+                QuoridorApplication.getMainStage(),
+                1050,
+                690);
     }
 }
