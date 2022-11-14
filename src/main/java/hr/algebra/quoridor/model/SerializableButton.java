@@ -1,17 +1,16 @@
 package hr.algebra.quoridor.model;
 
-import javafx.scene.image.ImageView;
 import java.io.Serializable;
 
 public class SerializableButton implements Serializable {
     private int positionX;
     private int positionY;
-    private ImageView imageView;
+    private String string;
 
-    public SerializableButton(int positionX, int positionY, ImageView imageView) {
+    public SerializableButton(int positionX, int positionY, String string) {
         this.positionX = positionX;
         this.positionY = positionY;
-        this.imageView = imageView;
+        this.string = string;
     }
 
     public int getPositionX() {
@@ -30,11 +29,11 @@ public class SerializableButton implements Serializable {
         this.positionY = positionY;
     }
 
-    public ImageView getImageView() {
-        return imageView;
+    public String getString() {
+        return string;
     }
 
-    public void setImageView(ImageView imageView) {
-        this.imageView = imageView;
+    public void setString(String string) {
+        this.string = string;
     }
 }
