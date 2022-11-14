@@ -472,7 +472,10 @@ public class TwoPlayerGameScreenController implements Initializable {
                pressedButton != button_0_5 && pressedButton != button_0_6 && pressedButton != button_0_7 && pressedButton != button_0_8 && pressedButton != button_0_9 &&
                pressedButton != button_0_10 && pressedButton != button_10_0 && pressedButton != button_10_1 && pressedButton != button_10_2 && pressedButton != button_10_3 &&
                pressedButton != button_10_4 && pressedButton != button_10_5 && pressedButton != button_10_6 && pressedButton != button_10_7 && pressedButton != button_10_8 &&
-               pressedButton != button_10_9 && pressedButton != button_10_10;
+               pressedButton != button_10_9 && pressedButton != button_10_10 && pressedButton != button_1_0 && pressedButton != button_2_0 && pressedButton != button_3_0 &&
+               pressedButton != button_4_0 && pressedButton != button_5_0 && pressedButton != button_6_0 && pressedButton != button_7_0 && pressedButton != button_8_0 &&
+               pressedButton != button_9_0 && pressedButton != button_1_10 && pressedButton != button_2_10 && pressedButton != button_3_10 && pressedButton != button_4_10 &&
+               pressedButton != button_5_10 && pressedButton != button_6_10 && pressedButton != button_7_10 && pressedButton != button_8_10 && pressedButton != button_9_10;
     }
 
     private void announceWinner() {
@@ -730,8 +733,8 @@ public class TwoPlayerGameScreenController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         playerOneTurn = true;
         wallButtonPlacementCounter = 0;
-        playerOneWalls = 2;
-        playerTwoWalls = 2;
+        playerOneWalls = 8;
+        playerTwoWalls = 8;
         turnCounter = 0;
 
         turn_counter.setText("0");
