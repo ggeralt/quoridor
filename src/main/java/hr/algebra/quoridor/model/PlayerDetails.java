@@ -12,9 +12,19 @@ public class PlayerDetails {
     public String getPlayerName() {
         return playerName;
     }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
     public Integer getNumberOfWins() {
         return numberOfWins;
     }
+
+    public void setNumberOfWins(Integer numberOfWins) {
+        this.numberOfWins = numberOfWins;
+    }
+
     public void recordWin() {
         numberOfWins++;
     }

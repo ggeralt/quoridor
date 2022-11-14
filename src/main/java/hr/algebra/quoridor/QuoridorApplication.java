@@ -11,7 +11,7 @@ public class QuoridorApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(QuoridorApplication.class.getResource("startGameScreen.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(QuoridorApplication.class.getResource("twoPlayerStartGameScreen.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
 
         stage.setTitle("Quoridor");
