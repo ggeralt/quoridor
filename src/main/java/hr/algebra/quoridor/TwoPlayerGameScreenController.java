@@ -341,7 +341,7 @@ public class TwoPlayerGameScreenController implements Initializable {
     public void buttonPressed(ActionEvent actionEvent) {
         pressedButton = (Button)actionEvent.getSource();
 
-        if (!"".equals(pressedButton.getText()) || pressedButton == playerOnePosition || pressedButton == playerTwoPosition) {
+        if (!"".equals(pressedButton.getText())) {
             return;
         }
 
