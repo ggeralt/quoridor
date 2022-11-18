@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 import static javafx.scene.control.Alert.AlertType.ERROR;
 import static javafx.scene.control.Alert.AlertType.INFORMATION;
 
-public class TwoPlayerGameScreenController implements Initializable {
+public class GameScreenController implements Initializable {
     @FXML
     private Label player_one_name;
     @FXML
@@ -551,15 +551,15 @@ public class TwoPlayerGameScreenController implements Initializable {
         wallButtonPlacementCounter--;
 
         if (playerOneTurn) {
-            playerMovesObservable.add(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName() + ": " + "WALL: " + firstPlacedWall.getId() + ", " + pressedButton.getId());
-            player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+            playerMovesObservable.add(LogInScreenController.getPlayerOneDetails().getPlayerName() + ": " + "WALL: " + firstPlacedWall.getId() + ", " + pressedButton.getId());
+            player_turn_name.setText(LogInScreenController.getPlayerTwoDetails().getPlayerName());
             playerOneWalls--;
             player_one_walls.setText(String.valueOf(playerOneWalls));
             playerOneTurn = false;
         }
         else {
-            playerMovesObservable.add(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName() + ": " + "WALL: " + firstPlacedWall.getId() + ", " + pressedButton.getId());
-            player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
+            playerMovesObservable.add(LogInScreenController.getPlayerTwoDetails().getPlayerName() + ": " + "WALL: " + firstPlacedWall.getId() + ", " + pressedButton.getId());
+            player_turn_name.setText(LogInScreenController.getPlayerOneDetails().getPlayerName());
             playerTwoWalls--;
             player_two_walls.setText(String.valueOf(playerTwoWalls));
             playerOneTurn = true;
@@ -585,25 +585,25 @@ public class TwoPlayerGameScreenController implements Initializable {
                     INFORMATION,
                     "GAME OVER",
                     null,
-                    "The winner is " + TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
+                    "The winner is " + LogInScreenController.getPlayerOneDetails().getPlayerName());
 
-            TwoPlayerStartGameScreenController.getPlayerOneDetails().recordWin();
+            LogInScreenController.getPlayerOneDetails().recordWin();
         }
         else {
             AlertUtils.showAlert(
                     INFORMATION,
                     "GAME OVER",
                     null,
-                    "The winner is " + TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+                    "The winner is " + LogInScreenController.getPlayerTwoDetails().getPlayerName());
 
-            TwoPlayerStartGameScreenController.getPlayerTwoDetails().recordWin();
+            LogInScreenController.getPlayerTwoDetails().recordWin();
         }
 
-        System.out.println("Number of wins (" + TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName() + "): "
-                + TwoPlayerStartGameScreenController.getPlayerOneDetails().getNumberOfWins());
+        System.out.println("Number of wins (" + LogInScreenController.getPlayerOneDetails().getPlayerName() + "): "
+                + LogInScreenController.getPlayerOneDetails().getNumberOfWins());
 
-        System.out.println("Number of wins (" + TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName() + "): "
-                + TwoPlayerStartGameScreenController.getPlayerTwoDetails().getNumberOfWins());
+        System.out.println("Number of wins (" + LogInScreenController.getPlayerTwoDetails().getPlayerName() + "): "
+                + LogInScreenController.getPlayerTwoDetails().getNumberOfWins());
 
         try {
             startTwoPlayerGame();
@@ -616,8 +616,8 @@ public class TwoPlayerGameScreenController implements Initializable {
         if (playerOneTurn) {
             pressedButton.setText(WHITE_PAWN);
             playerOnePosition = pressedButton;
-            playerMovesObservable.add(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName() + ": " + pressedButton.getId());
-            player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+            playerMovesObservable.add(LogInScreenController.getPlayerOneDetails().getPlayerName() + ": " + pressedButton.getId());
+            player_turn_name.setText(LogInScreenController.getPlayerTwoDetails().getPlayerName());
             playerOnePreviousPosition.setText("");
             playerOnePreviousPosition = playerOnePosition;
             playerOneTurn = false;
@@ -625,8 +625,8 @@ public class TwoPlayerGameScreenController implements Initializable {
         else {
             pressedButton.setText(BLACK_PAWN);
             playerTwoPosition = pressedButton;
-            playerMovesObservable.add(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName() + ": " + pressedButton.getId());
-            player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
+            playerMovesObservable.add(LogInScreenController.getPlayerTwoDetails().getPlayerName() + ": " + pressedButton.getId());
+            player_turn_name.setText(LogInScreenController.getPlayerOneDetails().getPlayerName());
             playerTwoPreviousPosition.setText("");
             playerTwoPreviousPosition = playerTwoPosition;
             playerOneTurn = true;
@@ -817,10 +817,10 @@ public class TwoPlayerGameScreenController implements Initializable {
             serializer.writeInt(turnCounter);
             serializer.writeInt(playerOneWalls);
             serializer.writeInt(playerTwoWalls);
-            serializer.writeInt(TwoPlayerStartGameScreenController.getPlayerOneDetails().getNumberOfWins());
-            serializer.writeInt(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getNumberOfWins());
-            serializer.writeUTF(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
-            serializer.writeUTF(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+            serializer.writeInt(LogInScreenController.getPlayerOneDetails().getNumberOfWins());
+            serializer.writeInt(LogInScreenController.getPlayerTwoDetails().getNumberOfWins());
+            serializer.writeUTF(LogInScreenController.getPlayerOneDetails().getPlayerName());
+            serializer.writeUTF(LogInScreenController.getPlayerTwoDetails().getPlayerName());
         }
 
         AlertUtils.showAlert(
@@ -852,26 +852,26 @@ public class TwoPlayerGameScreenController implements Initializable {
             turnCounter = deserializer.readInt();
             playerOneWalls = deserializer.readInt();
             playerTwoWalls = deserializer.readInt();
-            TwoPlayerStartGameScreenController.getPlayerOneDetails().setNumberOfWins(deserializer.readInt());
-            TwoPlayerStartGameScreenController.getPlayerTwoDetails().setNumberOfWins(deserializer.readInt());
-            TwoPlayerStartGameScreenController.getPlayerOneDetails().setPlayerName(deserializer.readUTF());
-            TwoPlayerStartGameScreenController.getPlayerTwoDetails().setPlayerName(deserializer.readUTF());
+            LogInScreenController.getPlayerOneDetails().setNumberOfWins(deserializer.readInt());
+            LogInScreenController.getPlayerTwoDetails().setNumberOfWins(deserializer.readInt());
+            LogInScreenController.getPlayerOneDetails().setPlayerName(deserializer.readUTF());
+            LogInScreenController.getPlayerTwoDetails().setPlayerName(deserializer.readUTF());
 
             turn_counter.setText(String.valueOf(turnCounter));
-            player_one_score.setText(String.valueOf(TwoPlayerStartGameScreenController.getPlayerOneDetails().getNumberOfWins()));
-            player_two_score.setText(String.valueOf(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getNumberOfWins()));
-            player_one_name.setText(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
-            player_two_name.setText(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+            player_one_score.setText(String.valueOf(LogInScreenController.getPlayerOneDetails().getNumberOfWins()));
+            player_two_score.setText(String.valueOf(LogInScreenController.getPlayerTwoDetails().getNumberOfWins()));
+            player_one_name.setText(LogInScreenController.getPlayerOneDetails().getPlayerName());
+            player_two_name.setText(LogInScreenController.getPlayerTwoDetails().getPlayerName());
             player_one_walls.setText(String.valueOf(playerOneWalls));
             player_two_walls.setText(String.valueOf(playerTwoWalls));
             player_moves.setItems(playerMovesObservable);
             player_moves.scrollTo(player_moves.getItems().size());
 
             if (playerOneTurn) {
-                player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
+                player_turn_name.setText(LogInScreenController.getPlayerOneDetails().getPlayerName());
             }
             else {
-                player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+                player_turn_name.setText(LogInScreenController.getPlayerTwoDetails().getPlayerName());
             }
         }
     }
@@ -891,17 +891,17 @@ public class TwoPlayerGameScreenController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         playerOneTurn = true;
-        player_turn_name.setText(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
+        player_turn_name.setText(LogInScreenController.getPlayerOneDetails().getPlayerName());
         wallButtonPlacementCounter = 0;
         playerOneWalls = 6;
         playerTwoWalls = 6;
         turnCounter = 0;
 
         turn_counter.setText(String.valueOf(turnCounter));
-        player_one_score.setText(String.valueOf(TwoPlayerStartGameScreenController.getPlayerOneDetails().getNumberOfWins()));
-        player_two_score.setText(String.valueOf(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getNumberOfWins()));
-        player_one_name.setText(TwoPlayerStartGameScreenController.getPlayerOneDetails().getPlayerName());
-        player_two_name.setText(TwoPlayerStartGameScreenController.getPlayerTwoDetails().getPlayerName());
+        player_one_score.setText(String.valueOf(LogInScreenController.getPlayerOneDetails().getNumberOfWins()));
+        player_two_score.setText(String.valueOf(LogInScreenController.getPlayerTwoDetails().getNumberOfWins()));
+        player_one_name.setText(LogInScreenController.getPlayerOneDetails().getPlayerName());
+        player_two_name.setText(LogInScreenController.getPlayerTwoDetails().getPlayerName());
         player_one_walls.setText(String.valueOf(playerOneWalls));
         player_two_walls.setText(String.valueOf(playerTwoWalls));
 
@@ -1041,7 +1041,7 @@ public class TwoPlayerGameScreenController implements Initializable {
 
     public void startTwoPlayerGame() throws IOException {
         FXMLUtils.showScreen(
-                "twoPlayerGameScreen.fxml",
+                "gameScreen.fxml",
                 QuoridorApplication.getMainStage(),
                 1050,
                 690);

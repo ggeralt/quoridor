@@ -16,7 +16,7 @@ public class QuoridorApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLUtils.showScreen(
-                "twoPlayerStartGameScreen.fxml",
+                "logInScreen.fxml",
                 stage,
                 600,
                 400);

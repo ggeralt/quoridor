@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import static javafx.scene.control.Alert.AlertType.ERROR;
 
-public class TwoPlayerStartGameScreenController {
+public class LogInScreenController {
     @FXML
     private TextField playerOneNameTextField;
     @FXML
@@ -63,7 +63,7 @@ public class TwoPlayerStartGameScreenController {
         playerTwoDetails = new PlayerDetails(playerTwoName);
 
         FXMLUtils.showScreen(
-                "twoPlayerGameScreen.fxml",
+                "gameScreen.fxml",
                 QuoridorApplication.getMainStage(),
                 1050,
                 690);
