@@ -606,7 +606,7 @@ public class GameScreenController implements Initializable {
                 + LogInScreenController.getPlayerTwoDetails().getNumberOfWins());
 
         try {
-            startTwoPlayerGame();
+            startGame();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -1039,7 +1039,7 @@ public class GameScreenController implements Initializable {
         gameBoard[0][5].setText(BLACK_PAWN);
     }
 
-    public void startTwoPlayerGame() throws IOException {
+    public void startGame() throws IOException {
         FXMLUtils.showScreen(
                 "gameScreen.fxml",
                 QuoridorApplication.getMainStage(),

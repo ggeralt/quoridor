@@ -15,7 +15,7 @@
         <menus>
           <Menu mnemonicParsing="false" text="Game">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#startTwoPlayerGame" text="New" />
+              <MenuItem mnemonicParsing="false" onAction="#startGame" text="New" />
                   <MenuItem mnemonicParsing="false" onAction="#saveGame" text="Save" />
                   <MenuItem mnemonicParsing="false" onAction="#loadGame" text="Load" />
                   <MenuItem mnemonicParsing="false" onAction="#exitGame" text="Exit" />

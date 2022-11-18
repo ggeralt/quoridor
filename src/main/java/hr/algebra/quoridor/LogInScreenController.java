@@ -27,7 +27,7 @@ public class LogInScreenController {
         return playerTwoDetails;
     }
 
-    public void startTwoPlayerGame() throws IOException {
+    public void startGame() throws IOException {
         if (playerOneNameTextField.getText().isEmpty() && playerTwoNameTextField.getText().isEmpty()) {
             AlertUtils.showAlert(
                     ERROR,
