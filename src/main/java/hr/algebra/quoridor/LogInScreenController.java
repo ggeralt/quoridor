@@ -31,27 +31,27 @@ public class LogInScreenController {
         if (playerOneNameTextField.getText().isBlank() && playerTwoNameTextField.getText().isBlank()) {
             AlertUtils.showAlert(
                     ERROR,
-                    "Empty player name",
+                    "Blank player names",
                     null,
-                    "Player names are empty!");
+                    "Player names are blank!");
 
             return;
         }
         else if (playerOneNameTextField.getText().isBlank()) {
             AlertUtils.showAlert(
                     ERROR,
-                    "Empty player name",
+                    "Blank player name",
                     null,
-                    "Player one name is empty!");
+                    "Player one name is blank!");
 
             return;
         }
         else if (playerTwoNameTextField.getText().isBlank()) {
             AlertUtils.showAlert(
                     ERROR,
-                    "Empty player name",
+                    "Blank player name",
                     null,
-                    "Player two name is empty!");
+                    "Player two name is blank!");
 
             return;
         }
