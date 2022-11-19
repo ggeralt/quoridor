@@ -28,7 +28,7 @@ public class LogInScreenController {
     }
 
     public void startGame() throws IOException {
-        if (playerOneNameTextField.getText().isEmpty() && playerTwoNameTextField.getText().isEmpty()) {
+        if (playerOneNameTextField.getText().isBlank() && playerTwoNameTextField.getText().isBlank()) {
             AlertUtils.showAlert(
                     ERROR,
                     "Empty player name",
@@ -37,7 +37,7 @@ public class LogInScreenController {
 
             return;
         }
-        else if (playerOneNameTextField.getText().isEmpty()) {
+        else if (playerOneNameTextField.getText().isBlank()) {
             AlertUtils.showAlert(
                     ERROR,
                     "Empty player name",
@@ -46,7 +46,7 @@ public class LogInScreenController {
 
             return;
         }
-        else if (playerTwoNameTextField.getText().isEmpty()) {
+        else if (playerTwoNameTextField.getText().isBlank()) {
             AlertUtils.showAlert(
                     ERROR,
                     "Empty player name",
