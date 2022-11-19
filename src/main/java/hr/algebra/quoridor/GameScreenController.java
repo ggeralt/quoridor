@@ -812,7 +812,7 @@ public class GameScreenController implements Initializable {
 
         try(ObjectOutputStream serializer = new ObjectOutputStream(new FileOutputStream(SAVED_GAME_FILE))) {
             serializer.writeObject(serializableButtonList);
-            serializer.writeObject(new ArrayList<String>(playerMovesObservable));
+            serializer.writeObject(new ArrayList<>(playerMovesObservable));
             serializer.writeBoolean(playerOneTurn);
             serializer.writeInt(turnCounter);
             serializer.writeInt(playerOneWalls);
