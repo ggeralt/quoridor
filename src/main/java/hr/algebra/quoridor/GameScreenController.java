@@ -297,6 +297,7 @@ public class GameScreenController implements Initializable {
     private static final int GAME_BOARD_HEIGHT = 11;
     private static final String CLASS_EXTENSION = ".class";
     private static final String SAVED_GAME_FILE = "savedGame.ser";
+    private static final String DOCUMENTATION_FILE = "documentation.html";
     private static final String WHITE_PAWN = "♙";
     private static final String BLACK_PAWN = "♟";
     private static int wallButtonPlacementCounter;
@@ -637,7 +638,7 @@ public class GameScreenController implements Initializable {
     }
 
     public void generateDocumentation() {
-        File documentationFile = new File("documentation.html");
+        File documentationFile = new File(DOCUMENTATION_FILE);
 
         try {
             FileWriter fileWriter = new FileWriter(documentationFile);
@@ -718,7 +719,7 @@ public class GameScreenController implements Initializable {
                     fileWriter.write("<h3>Constructors</h3>");
 
                     for (Constructor constructor : constructors) {
-                        String constructorParameters = generateDocumentation(constructor);
+                        String constructorParameters = getParameters(constructor);
                         fileWriter.write("<h4>Constructor: "
                                 + Modifier.toString(constructor.getModifiers())
                                 + " " + constructor.getName()
@@ -731,7 +732,7 @@ public class GameScreenController implements Initializable {
                     fileWriter.write("<h3>Methods</h3>");
 
                     for (Method method : methods) {
-                        String methodParameters = generateDocumentation(method);
+                        String methodParameters = getParameters(method);
                         StringBuilder exceptionsStringBuilder = new StringBuilder();
 
                         for (int i = 0; i < method.getExceptionTypes().length; i++) {
@@ -777,7 +778,7 @@ public class GameScreenController implements Initializable {
                 "Project documentation successfully generated!");
     }
 
-    private <T extends Executable> String generateDocumentation(T executable) {
+    private <T extends Executable> String getParameters(T executable) {
         Parameter[] parameters = executable.getParameters();
         StringBuilder methodParameters = new StringBuilder();
 
