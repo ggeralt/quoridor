@@ -719,7 +719,7 @@ public class GameScreenController implements Initializable {
                     fileWriter.write("<h3>Constructors</h3>");
 
                     for (Constructor constructor : constructors) {
-                        String constructorParameters = getParameters(constructor);
+                        String constructorParameters = getParametersForDocumentation(constructor);
                         fileWriter.write("<h4>Constructor: "
                                 + Modifier.toString(constructor.getModifiers())
                                 + " " + constructor.getName()
@@ -732,7 +732,7 @@ public class GameScreenController implements Initializable {
                     fileWriter.write("<h3>Methods</h3>");
 
                     for (Method method : methods) {
-                        String methodParameters = getParameters(method);
+                        String methodParameters = getParametersForDocumentation(method);
                         StringBuilder exceptionsStringBuilder = new StringBuilder();
 
                         for (int i = 0; i < method.getExceptionTypes().length; i++) {
@@ -778,7 +778,7 @@ public class GameScreenController implements Initializable {
                 "Project documentation successfully generated!");
     }
 
-    private <T extends Executable> String getParameters(T executable) {
+    private <T extends Executable> String getParametersForDocumentation(T executable) {
         Parameter[] parameters = executable.getParameters();
         StringBuilder methodParameters = new StringBuilder();
 
