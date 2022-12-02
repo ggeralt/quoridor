@@ -298,6 +298,7 @@ public class GameScreenController implements Initializable {
     private static final String CLASS_EXTENSION = ".class";
     private static final String SAVED_GAME_FILE = "savedGame.ser";
     private static final String DOCUMENTATION_FILE = "documentation.html";
+    private static final String DOCUMENTATION_TITLE = "quoridor - Project documentation";
     private static final String WHITE_PAWN = "♙";
     private static final String BLACK_PAWN = "♟";
     private static int wallButtonPlacementCounter;
@@ -646,11 +647,11 @@ public class GameScreenController implements Initializable {
             fileWriter.write("<!DOCTYPE html>");
             fileWriter.write("<html>");
             fileWriter.write("<head>");
-            fileWriter.write("<title>Project documentation</title>");
+            fileWriter.write("<title>" + DOCUMENTATION_TITLE + "</title>");
             fileWriter.write("</head>");
             fileWriter.write("<body>");
-            fileWriter.write("<h1>Project documentation</h1>");
-            fileWriter.write("<b><p>Class list:</p></b>");
+            fileWriter.write("<h1>" + DOCUMENTATION_TITLE + "</h1>");
+            fileWriter.write("<h1>Class list:</h1>");
 
             List<Path> paths = Files.walk(Paths.get("."))
                     .filter(path -> path
@@ -694,11 +695,9 @@ public class GameScreenController implements Initializable {
                     for (Field classField : c.getDeclaredFields()) {
                         Annotation[] annotations = classField.getAnnotations();
 
-                        if (annotations.length != 0) {
-                            for (Annotation annotation : annotations) {
-                                classFieldString.append(annotation.toString());
-                                classFieldString.append("<br />");
-                            }
+                        for (Annotation annotation : annotations) {
+                            classFieldString.append(annotation.toString());
+                            classFieldString.append("<br />");
                         }
 
                         classFieldString.append(Modifier.toString(classField.getModifiers()));
@@ -710,9 +709,10 @@ public class GameScreenController implements Initializable {
                         classFieldString.append("<br />");
                     }
 
-                    fileWriter.write("<h3>Fields</h3>");
-
-                    fileWriter.write("<h4>" + classFieldString + "</h4>");
+                    if (!classFieldString.isEmpty()) {
+                        fileWriter.write("<h3>Fields</h3>");
+                        fileWriter.write("<h4>" + classFieldString + "</h4>");
+                    }
 
                     Constructor[] constructors = c.getConstructors();
 
@@ -720,7 +720,7 @@ public class GameScreenController implements Initializable {
 
                     for (Constructor constructor : constructors) {
                         String constructorParameters = getParametersForDocumentation(constructor);
-                        fileWriter.write("<h4>Constructor: "
+                        fileWriter.write("<h4>"
                                 + Modifier.toString(constructor.getModifiers())
                                 + " " + constructor.getName()
                                 + "(" + constructorParameters + ")"
@@ -748,7 +748,8 @@ public class GameScreenController implements Initializable {
                             }
                         }
 
-                        fileWriter.write("<h4>Method: " + Modifier.toString(method.getModifiers())
+                        fileWriter.write("<h4>"
+                                + Modifier.toString(method.getModifiers())
                                 + " " + method.getReturnType().getSimpleName()
                                 + " " + method.getName() + "(" + methodParameters + ")"
                                 + " " + exceptionsStringBuilder
