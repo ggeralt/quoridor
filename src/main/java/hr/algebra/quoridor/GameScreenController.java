@@ -316,7 +316,6 @@ public class GameScreenController implements Initializable {
     private Button firstPlacedWall;
     private Button[][] gameBoard;
     private final ObservableList<String> playerMovesObservable = FXCollections.observableArrayList();
-
     private final Image wall = new Image(Objects.requireNonNull(getClass().getResourceAsStream("image/wall.png")));
 
     public void wallButtonPressed() {
