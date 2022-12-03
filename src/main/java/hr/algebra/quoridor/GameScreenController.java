@@ -687,10 +687,11 @@ public class GameScreenController implements Initializable {
                 }
 
                 try {
+                    int row_counter = 0;
                     Class<?> c = Class.forName(stringBuilder.toString());
                     StringBuilder classFieldString = new StringBuilder();
 
-                    fileWriter.write("<h2>" + Modifier.toString(c.getModifiers()) + " " + c.getName() + "</h2>");
+                    fileWriter.write("<br /><h2>" + Modifier.toString(c.getModifiers()) + " " + c.getName() + "</h2>");
 
                     for (Field classField : c.getDeclaredFields()) {
                         Annotation[] annotations = classField.getAnnotations();
@@ -706,7 +707,15 @@ public class GameScreenController implements Initializable {
                         classFieldString.append(" ");
                         classFieldString.append(classField.getName());
                         classFieldString.append(" ");
-                        classFieldString.append("<br />");
+
+                        if (row_counter == c.getDeclaredFields().length - 1) {
+                            classFieldString.append("<br />");
+                        }
+                        else {
+                            classFieldString.append("<br /><br />");
+                        }
+
+                        row_counter++;
                     }
 
                     if (!classFieldString.isEmpty()) {
