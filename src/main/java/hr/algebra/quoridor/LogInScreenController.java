@@ -1,6 +1,6 @@
 package hr.algebra.quoridor;
 
-import hr.algebra.quoridor.model.PlayerDetails;
+import hr.algebra.quoridor.model.Player;
 import hr.algebra.quoridor.util.AlertUtils;
 import hr.algebra.quoridor.util.FXMLUtils;
 import javafx.fxml.FXML;
@@ -16,15 +16,15 @@ public class LogInScreenController {
     @FXML
     private TextField playerTwoNameTextField;
 
-    private static PlayerDetails playerOneDetails;
-    private static PlayerDetails playerTwoDetails;
+    private static Player playerOne;
+    private static Player playerTwo;
 
-    public static PlayerDetails getPlayerOneDetails() {
-        return playerOneDetails;
+    public static Player getPlayerOne() {
+        return playerOne;
     }
 
-    public static PlayerDetails getPlayerTwoDetails() {
-        return playerTwoDetails;
+    public static Player getPlayerTwo() {
+        return playerTwo;
     }
 
     public void startGame() throws IOException {
@@ -59,8 +59,8 @@ public class LogInScreenController {
         String playerOneName = playerOneNameTextField.getText();
         String playerTwoName = playerTwoNameTextField.getText();
 
-        playerOneDetails = new PlayerDetails(playerOneName);
-        playerTwoDetails = new PlayerDetails(playerTwoName);
+        playerOne = new Player(playerOneName);
+        playerTwo = new Player(playerTwoName);
 
         FXMLUtils.showScreen(
                 "gameScreen.fxml",
