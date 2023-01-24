@@ -3,7 +3,6 @@ package hr.algebra.quoridor.util;
 import hr.algebra.quoridor.QuoridorApplication;
 import javafx.scene.control.Alert;
 
-import static hr.algebra.quoridor.LogInScreenController.getPlayerOne;
 import static javafx.scene.control.Alert.AlertType.INFORMATION;
 
 public class AlertUtils {
