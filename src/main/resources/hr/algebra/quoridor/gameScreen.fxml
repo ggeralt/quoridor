@@ -560,7 +560,7 @@
             <Font size="20.0" />
          </font>
       </Label>
-      <ListView fx:id="player_moves" layoutX="684.0" layoutY="277.0" prefHeight="311.0" prefWidth="327.0" />
+      <ListView fx:id="list_of_player_moves" layoutX="684.0" layoutY="277.0" prefHeight="311.0" prefWidth="327.0" />
       <Label layoutX="829.0" layoutY="48.0" text="Player turn:">
          <font>
             <Font size="20.0" />

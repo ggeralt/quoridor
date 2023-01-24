@@ -12,9 +12,9 @@ import static javafx.scene.control.Alert.AlertType.ERROR;
 
 public class LogInScreenController {
     @FXML
-    private TextField playerOneNameTextField;
+    private TextField player_one_name_input;
     @FXML
-    private TextField playerTwoNameTextField;
+    private TextField player_two_name_input;
 
     private static Player playerOne;
     private static Player playerTwo;
@@ -28,7 +28,7 @@ public class LogInScreenController {
     }
 
     public void startGame() throws IOException {
-        if (playerOneNameTextField.getText().isBlank() && playerTwoNameTextField.getText().isBlank()) {
+        if (player_one_name_input.getText().isBlank() && player_two_name_input.getText().isBlank()) {
             AlertUtils.showAlert(
                     ERROR,
                     "Blank player names",
@@ -37,7 +37,7 @@ public class LogInScreenController {
 
             return;
         }
-        else if (playerOneNameTextField.getText().isBlank()) {
+        else if (player_one_name_input.getText().isBlank()) {
             AlertUtils.showAlert(
                     ERROR,
                     "Blank player name",
@@ -46,7 +46,7 @@ public class LogInScreenController {
 
             return;
         }
-        else if (playerTwoNameTextField.getText().isBlank()) {
+        else if (player_two_name_input.getText().isBlank()) {
             AlertUtils.showAlert(
                     ERROR,
                     "Blank player name",
@@ -56,8 +56,8 @@ public class LogInScreenController {
             return;
         }
 
-        String playerOneName = playerOneNameTextField.getText();
-        String playerTwoName = playerTwoNameTextField.getText();
+        String playerOneName = player_one_name_input.getText();
+        String playerTwoName = player_two_name_input.getText();
 
         playerOne = new Player(playerOneName);
         playerTwo = new Player(playerTwoName);

@@ -18,11 +18,11 @@
             <Font size="24.0" />
          </font>
       </Label>
-      <TextField fx:id="playerOneNameTextField" layoutX="132.0" layoutY="37.0" prefHeight="30.0" prefWidth="424.0">
+      <TextField fx:id="player_one_name_input" layoutX="132.0" layoutY="37.0" prefHeight="30.0" prefWidth="424.0">
          <font>
             <Font size="24.0" />
          </font></TextField>
-      <TextField fx:id="playerTwoNameTextField" layoutX="132.0" layoutY="150.0" prefHeight="30.0" prefWidth="424.0">
+      <TextField fx:id="player_two_name_input" layoutX="132.0" layoutY="150.0" prefHeight="30.0" prefWidth="424.0">
          <font>
             <Font size="24.0" />
          </font></TextField>
