@@ -540,12 +540,12 @@
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="player_one_name" layoutX="684.0" layoutY="162.0">
+      <Label fx:id="player_name" layoutX="684.0" layoutY="162.0">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="player_one_score" layoutX="775.0" layoutY="162.0">
+      <Label fx:id="player_score" layoutX="775.0" layoutY="162.0">
          <font>
             <Font size="20.0" />
          </font>
@@ -581,7 +581,7 @@
             <Font size="20.0" />
          </font>
       </Label>
-      <Label fx:id="player_one_walls" layoutX="1000.0" layoutY="108.0">
+      <Label fx:id="player_walls" layoutX="1000.0" layoutY="108.0">
          <font>
             <Font size="20.0" />
          </font>

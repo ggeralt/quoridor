@@ -1,43 +1,57 @@
 package hr.algebra.quoridor;
 
 import hr.algebra.quoridor.model.Player;
+import hr.algebra.quoridor.model.PlayerMetadata;
+import hr.algebra.quoridor.server.Server;
 import hr.algebra.quoridor.util.AlertUtils;
 import hr.algebra.quoridor.util.FXMLUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 import static javafx.scene.control.Alert.AlertType.ERROR;
 
 public class LogInScreenController {
     @FXML
-    private TextField player_one_name_input;
-    @FXML
-    private TextField player_two_name_input;
+    private TextField player_name_input;
 
-    private static Player playerOne;
-    private static Player playerTwo;
+    private static Player player;
 
-    public static Player getPlayerOne() {
-        return playerOne;
-    }
-
-    public static Player getPlayerTwo() {
-        return playerTwo;
+    public static Player getPlayer() {
+        return player;
     }
 
     public void startGame() throws IOException {
-        if (player_one_name_input.getText().isBlank() && player_two_name_input.getText().isBlank()) {
-            AlertUtils.showAlert(
-                    ERROR,
-                    "Blank player names",
-                    null,
-                    "Player names are blank!");
+        try (Socket clientSocket = new Socket(Server.HOST, Server.PORT)) {
+            ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
+            ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
 
-            return;
+            System.err.println("Client is connecting to " + clientSocket.getInetAddress() + ":" +clientSocket.getPort());
+
+            oos.writeObject(new PlayerMetadata(clientSocket.getLocalAddress().toString().substring(1),
+                    String.valueOf(clientSocket.getPort()), player_name_input.getText(),
+                    ProcessHandle.current().pid()));
+
+            if (ois.available() > 0) {
+                int confirmation = (int) ois.readObject();
+
+                if (confirmation == 0) {
+                    System.exit(1);
+                }
+                else {
+                    System.out.println("SUCCESSFULY CONNECTED");
+                }
+            }
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
-        else if (player_one_name_input.getText().isBlank()) {
+
+        if (player_name_input.getText().isBlank()) {
             AlertUtils.showAlert(
                     ERROR,
                     "Blank player name",
@@ -46,21 +60,10 @@ public class LogInScreenController {
 
             return;
         }
-        else if (player_two_name_input.getText().isBlank()) {
-            AlertUtils.showAlert(
-                    ERROR,
-                    "Blank player name",
-                    null,
-                    "Player two name is blank!");
 
-            return;
-        }
+        String playerOneName = player_name_input.getText();
 
-        String playerOneName = player_one_name_input.getText();
-        String playerTwoName = player_two_name_input.getText();
-
-        playerOne = new Player(playerOneName);
-        playerTwo = new Player(playerTwoName);
+        player = new Player(playerOneName);
 
         FXMLUtils.showScreen(
                 "gameScreen.fxml",

@@ -8,21 +8,12 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hr.algebra.quoridor.LogInScreenController">
    <children>
-      <Label layoutX="14.0" layoutY="45.0" text="Player 1:">
+      <Label layoutX="14.0" layoutY="45.0" text="Player name:">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <Label layoutX="14.0" layoutY="158.0" text="Player 2:">
-         <font>
-            <Font size="24.0" />
-         </font>
-      </Label>
-      <TextField fx:id="player_one_name_input" layoutX="132.0" layoutY="37.0" prefHeight="30.0" prefWidth="424.0">
-         <font>
-            <Font size="24.0" />
-         </font></TextField>
-      <TextField fx:id="player_two_name_input" layoutX="132.0" layoutY="150.0" prefHeight="30.0" prefWidth="424.0">
+      <TextField fx:id="player_name_input" layoutX="14.0" layoutY="90.0" prefHeight="47.0" prefWidth="571.0">
          <font>
             <Font size="24.0" />
          </font></TextField>
