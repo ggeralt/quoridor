@@ -1,5 +1,6 @@
 package hr.algebra.quoridor;
 
+import hr.algebra.quoridor.model.PlayerMetadata;
 import hr.algebra.quoridor.model.SerializableButton;
 import hr.algebra.quoridor.util.AlertUtils;
 import hr.algebra.quoridor.util.FXMLUtils;
@@ -18,6 +19,8 @@ import javafx.scene.image.ImageView;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -303,8 +306,6 @@ public class GameScreenController implements Initializable {
     private int turnCounter;
     private Button playerOnePosition;
     private Button playerOnePreviousPosition;
-    private Button playerTwoPosition;
-    private Button playerTwoPreviousPosition;
     private Button pressedButton;
     private Button firstPlacedWall;
     private Button[][] gameBoard;
@@ -731,8 +732,7 @@ public class GameScreenController implements Initializable {
                     playerOnePreviousPosition = gameBoard[serializableButton.positionX()][serializableButton.positionY()];
                 }
                 else if (gameBoard[serializableButton.positionX()][serializableButton.positionY()].getText().equals(BLACK_PAWN)) {
-                    playerTwoPosition = gameBoard[serializableButton.positionX()][serializableButton.positionY()];
-                    playerTwoPreviousPosition = gameBoard[serializableButton.positionX()][serializableButton.positionY()];
+
                 }
             }
 
@@ -905,13 +905,36 @@ public class GameScreenController implements Initializable {
         gameBoard[10][10] = button_10_10;
 
         playerOnePosition = gameBoard[10][5];
-        playerTwoPosition = gameBoard[0][5];
+        //playerTwoPosition = gameBoard[0][5];
 
         playerOnePreviousPosition = gameBoard[10][5];
-        playerTwoPreviousPosition = gameBoard[0][5];
+        //playerTwoPreviousPosition = gameBoard[0][5];
 
         gameBoard[10][5].setText(WHITE_PAWN);
         gameBoard[0][5].setText(BLACK_PAWN);
+
+        PlayerMetadata playerMetadata = LogInScreenController.getPlayersMetadata().get(ProcessHandle.current().pid());
+
+        try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(playerMetadata.getPort()))){
+            System.err.println("Client listening on port: " + serverSocket.getLocalPort());
+
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.err.println("Client connected from port: " + clientSocket.getPort());
+                new Thread(() ->  processSerializableClient(clientSocket)).start();
+            }
+        }  catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void processSerializableClient(Socket clientSocket) {
+        try (ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
+             ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream())) {
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void startGame() throws IOException {

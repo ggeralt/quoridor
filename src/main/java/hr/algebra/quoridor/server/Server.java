@@ -16,6 +16,7 @@ public class Server {
     public static void main(String[] args) {
         acceptRequests();
     }
+
     private static void acceptRequests() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)){
             System.err.println("Server listening on port: " + serverSocket.getLocalPort());
@@ -36,7 +37,7 @@ public class Server {
 
     private static void processSerializableClient(Socket clientSocket) {
         try (ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
-             ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream())){
+             ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream())) {
 
             PlayerMetadata playerMetadata = (PlayerMetadata) ois.readObject();
 

@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 import static javafx.scene.control.Alert.AlertType.ERROR;
 
@@ -25,6 +27,12 @@ public class LogInScreenController {
         return player;
     }
 
+    private static final Map<Long, PlayerMetadata> playersMetadata = new HashMap<>();
+
+    public static Map<Long, PlayerMetadata> getPlayersMetadata() {
+        return playersMetadata;
+    }
+
     public void startGame() throws IOException {
         try (Socket clientSocket = new Socket(Server.HOST, Server.PORT)) {
             ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -32,9 +40,11 @@ public class LogInScreenController {
 
             System.err.println("Client is connecting to " + clientSocket.getInetAddress() + ":" +clientSocket.getPort());
 
-            oos.writeObject(new PlayerMetadata(clientSocket.getLocalAddress().toString().substring(1),
+            PlayerMetadata newPlayerMetadata = new PlayerMetadata(clientSocket.getLocalAddress().toString().substring(1),
                     String.valueOf(clientSocket.getPort()), player_name_input.getText(),
-                    ProcessHandle.current().pid()));
+                    ProcessHandle.current().pid());
+            playersMetadata.put(ProcessHandle.current().pid(), newPlayerMetadata);
+            oos.writeObject(newPlayerMetadata);
 
             if (ois.available() > 0) {
                 int confirmation = (int) ois.readObject();
