@@ -306,6 +306,8 @@ public class GameScreenController implements Initializable {
     private int turnCounter;
     private Button playerOnePosition;
     private Button playerOnePreviousPosition;
+    //private Button playerTwoPosition;
+    //private Button playerTwoPreviousPosition;
     private Button pressedButton;
     private Button firstPlacedWall;
     private Button[][] gameBoard;
@@ -393,13 +395,87 @@ public class GameScreenController implements Initializable {
                 }
             }
         }
+        /*else {
+            if (wallButtonPlacementCounter != 0 && getPlayerTwo().getNumberOfWalls() != 0 && checkInvalidWallPlacement()) {
+                if (wallButtonPlacementCounter == 2) {
+                    placeFirstWall();
+                }
+                else {
+                    if (Y_wall == 0) {
+                        if (pressedButton == gameBoard[X_wall][Y_wall + 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
+                            placeSecondWall();
+                        }
+                    }
+                    else if (Y_wall == 10) {
+                        if (pressedButton == gameBoard[X_wall][Y_wall - 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
+                            placeSecondWall();
+                        }
+                    }
+                    else {
+                        if (pressedButton == gameBoard[X_wall][Y_wall + 1] || pressedButton == gameBoard[X_wall][Y_wall - 1] || pressedButton == gameBoard[X_wall + 1][Y_wall] || pressedButton == gameBoard[X_wall - 1][Y_wall]) {
+                            placeSecondWall();
+                        }
+                    }
+                }
+
+                turn_counter.setText(String.valueOf(turnCounter));
+                list_of_player_moves.scrollTo(list_of_player_moves.getItems().size());
+
+                return;
+            }
+
+            if (wallButtonPlacementCounter == 0 || (wallButtonPlacementCounter == 2 && getPlayerTwo().getNumberOfWalls() == 0)) {
+                int X2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[1]);
+                int Y2 = Integer.parseInt(playerTwoPosition.getId().split("_", 3)[2]);
+
+                wallButtonPlacementCounter = 0;
+
+                if (X2 == 9) {
+                    if (pressedButton == gameBoard[10][Y2]) {
+                        applyPlayerInput();
+                        announceWinner();
+                    }
+                }
+
+                if (X2 == 0 && Y2 == 10) {
+                    if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
+                        applyPlayerInput();
+                    }
+                }
+                else if (X2 == 0 && Y2 == 0) {
+                    if (pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
+                        applyPlayerInput();
+                    }
+                }
+                else if (X2 == 0) {
+                    if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 + 1][Y2]) {
+                        applyPlayerInput();
+                    }
+                }
+                else if (Y2 == 10) {
+                    if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
+                        applyPlayerInput();
+                    }
+                }
+                else if (Y2 == 0) {
+                    if (pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
+                        applyPlayerInput();
+                    }
+                }
+                else {
+                    if (pressedButton == gameBoard[X2][Y2 - 1] || pressedButton == gameBoard[X2][Y2 + 1] || pressedButton == gameBoard[X2 - 1][Y2] || pressedButton == gameBoard[X2 + 1][Y2]) {
+                        applyPlayerInput();
+                    }
+                }
+            }
+        }*/
 
         turn_counter.setText(String.valueOf(turnCounter));
         list_of_player_moves.scrollTo(list_of_player_moves.getItems().size());
     }
 
     public void wallButtonPressed() {
-        if (wallButtonPlacementCounter == 0 && ((playerOneTurn && getPlayer().getNumberOfWalls() != 0))) {
+        if (wallButtonPlacementCounter == 0 && ((playerOneTurn && getPlayer().getNumberOfWalls() != 0) /*|| (!playerOneTurn && getPlayerTwo().getNumberOfWalls() != 0)*/)) {
             for (int i = 0; i < GAME_BOARD_WIDTH; i++) {
                 for (int j = 0; j < GAME_BOARD_HEIGHT; j++) {
                     if
@@ -451,6 +527,10 @@ public class GameScreenController implements Initializable {
             getPlayer().recordWallPlacement();
             player_walls.setText(String.valueOf(getPlayer().getNumberOfWalls()));
         }
+        /*else {
+            getPlayerTwo().recordWallPlacement();
+            player_two_walls.setText(String.valueOf(getPlayerTwo().getNumberOfWalls()));
+        }*/
 
         turnCounter++;
     }
@@ -467,13 +547,20 @@ public class GameScreenController implements Initializable {
         pressedButton.setText("X");
         wallButtonPlacementCounter--;
 
-        if (!playerOneTurn) {
+        if (playerOneTurn) {
             playerMovesObservable.add(getPlayer().getName() + ": " + "WALL: " + firstPlacedWall.getId() + ", " + pressedButton.getId());
             player_turn_name.setText(getPlayer().getName());
             getPlayer().recordWallPlacement();
             player_walls.setText(String.valueOf(getPlayer().getNumberOfWalls()));
             playerOneTurn = false;
         }
+        /*else {
+            playerMovesObservable.add(getPlayerTwo().getName() + ": " + "WALL: " + firstPlacedWall.getId() + ", " + pressedButton.getId());
+            player_turn_name.setText(getPlayerOne().getName());
+            getPlayerTwo().recordWallPlacement();
+            player_two_walls.setText(String.valueOf(getPlayerTwo().getNumberOfWalls()));
+            playerOneTurn = true;
+        }*/
 
         list_of_player_moves.setItems(playerMovesObservable);
     }
@@ -494,9 +581,16 @@ public class GameScreenController implements Initializable {
             getPlayer().recordWin();
             AlertUtils.showAnnouncedWinnerAlert(getPlayer().getName());
         }
+        /*else {
+            getPlayerTwo().recordWin();
+            AlertUtils.showAnnouncedWinnerAlert(getPlayerTwo().getName());
+        }*/
 
         System.out.println("Number of wins (" + getPlayer().getName() + "): "
                 + getPlayer().getNumberOfWins());
+
+        /*System.out.println("Number of wins (" + getPlayerTwo().getName() + "): "
+                + getPlayerTwo().getNumberOfWins());*/
 
         try {
             startGame();
@@ -506,7 +600,7 @@ public class GameScreenController implements Initializable {
     }
 
     private void applyPlayerInput() {
-        if (!playerOneTurn) {
+        if (playerOneTurn) {
             pressedButton.setText(WHITE_PAWN);
             playerOnePosition = pressedButton;
             playerMovesObservable.add(getPlayer().getName() + ": " + pressedButton.getId());
@@ -515,6 +609,15 @@ public class GameScreenController implements Initializable {
             playerOnePreviousPosition = playerOnePosition;
             playerOneTurn = false;
         }
+        /*else {
+            pressedButton.setText(BLACK_PAWN);
+            playerTwoPosition = pressedButton;
+            playerMovesObservable.add(getPlayerTwo().getName() + ": " + pressedButton.getId());
+            player_turn_name.setText(getPlayerOne().getName());
+            playerTwoPreviousPosition.setText("");
+            playerTwoPreviousPosition = playerTwoPosition;
+            playerOneTurn = true;
+        }*/
 
         list_of_player_moves.setItems(playerMovesObservable);
         turnCounter++;
@@ -709,8 +812,11 @@ public class GameScreenController implements Initializable {
             serializer.writeBoolean(playerOneTurn);
             serializer.writeInt(turnCounter);
             serializer.writeInt(getPlayer().getNumberOfWalls());
+            //serializer.writeInt(getPlayerTwo().getNumberOfWalls());
             serializer.writeInt(getPlayer().getNumberOfWins());
+            //serializer.writeInt(getPlayerTwo().getNumberOfWins());
             serializer.writeUTF(getPlayer().getName());
+            //serializer.writeUTF(getPlayerTwo().getName());
         }
 
         AlertUtils.showAlert(
@@ -731,28 +837,38 @@ public class GameScreenController implements Initializable {
                     playerOnePosition = gameBoard[serializableButton.positionX()][serializableButton.positionY()];
                     playerOnePreviousPosition = gameBoard[serializableButton.positionX()][serializableButton.positionY()];
                 }
-                else if (gameBoard[serializableButton.positionX()][serializableButton.positionY()].getText().equals(BLACK_PAWN)) {
-
-                }
+                /*else if (gameBoard[serializableButton.positionX()][serializableButton.positionY()].getText().equals(BLACK_PAWN)) {
+                    playerTwoPosition = gameBoard[serializableButton.positionX()][serializableButton.positionY()];
+                    playerTwoPreviousPosition = gameBoard[serializableButton.positionX()][serializableButton.positionY()];
+                }*/
             }
 
             playerMovesObservable.setAll((List<String>)deserializer.readObject());
             playerOneTurn = deserializer.readBoolean();
             turnCounter = deserializer.readInt();
             getPlayer().setNumberOfWalls(deserializer.readInt());
+            //getPlayerTwo().setNumberOfWalls(deserializer.readInt());
             getPlayer().setNumberOfWins(deserializer.readInt());
+            //getPlayerTwo().setNumberOfWins(deserializer.readInt());
             getPlayer().setName(deserializer.readUTF());
+            //getPlayerTwo().setName(deserializer.readUTF());
 
             turn_counter.setText(String.valueOf(turnCounter));
             player_score.setText(String.valueOf(getPlayer().getNumberOfWins()));
+            //player_two_score.setText(String.valueOf(getPlayerTwo().getNumberOfWins()));
             player_name.setText(getPlayer().getName());
+            //player_two_name.setText(getPlayerTwo().getName());
             player_walls.setText(String.valueOf(getPlayer().getNumberOfWalls()));
+            //player_two_walls.setText(String.valueOf(getPlayerTwo().getNumberOfWalls()));
             list_of_player_moves.setItems(playerMovesObservable);
             list_of_player_moves.scrollTo(list_of_player_moves.getItems().size());
 
             if (playerOneTurn) {
                 player_turn_name.setText(getPlayer().getName());
             }
+            /*else {
+                player_turn_name.setText(getPlayerTwo().getName());
+            }*/
         }
     }
 
@@ -777,8 +893,11 @@ public class GameScreenController implements Initializable {
 
         turn_counter.setText(String.valueOf(turnCounter));
         player_score.setText(String.valueOf(getPlayer().getNumberOfWins()));
+        //player_two_score.setText(String.valueOf(getPlayerTwo().getNumberOfWins()));
         player_name.setText(getPlayer().getName());
+        //player_two_name.setText(getPlayerTwo().getName());
         player_walls.setText(String.valueOf(getPlayer().getNumberOfWalls()));
+        //player_two_walls.setText(String.valueOf(getPlayerTwo().getNumberOfWalls()));
 
         gameBoard = new Button[GAME_BOARD_WIDTH][GAME_BOARD_HEIGHT];
 
