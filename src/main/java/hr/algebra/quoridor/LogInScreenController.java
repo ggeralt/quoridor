@@ -54,17 +54,18 @@ public class LogInScreenController {
             oos.writeObject(newPlayerMetadata);
 
             if (ois.available() > 0) {
-                int confirmation = (int) ois.readObject();
+                newPlayerMetadata.setPort(String.valueOf(clientSocket.getLocalPort()));
+                System.out.println("Confirmation read from the server.");
 
-                if (confirmation == 0) {
+                /*if (port == 0) {
                     System.exit(1);
                 }
                 else {
                     System.out.println("SUCCESSFULY CONNECTED");
-                }
+                }*/
             }
 
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

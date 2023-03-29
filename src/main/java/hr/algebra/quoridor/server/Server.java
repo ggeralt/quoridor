@@ -48,7 +48,9 @@ public class Server {
                     playerMetadata.getPid());
 
             if(players.size() < 2) {
+                System.out.println("Adding a new player to the game.");
                 players.put(playerMetadata.getPid(), playerMetadata);
+                oos.writeObject(1);
             }
             else {
                 oos.writeObject(0);
