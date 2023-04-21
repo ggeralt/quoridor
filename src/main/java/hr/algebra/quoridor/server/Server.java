@@ -1,5 +1,6 @@
 package hr.algebra.quoridor.server;
 
+import hr.algebra.quoridor.model.GameState;
 import hr.algebra.quoridor.model.PlayerMetadata;
 
 import java.io.*;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 public class Server {
     public static final String HOST = "localhost";
-    public static final int PORT = 1995;
+    public static final int PORT = 2002;
     private static final Map<Long, PlayerMetadata> players = new HashMap<>();
 
     public static void main(String[] args) {
@@ -50,14 +51,14 @@ public class Server {
             if(players.size() < 2) {
                 System.out.println("Adding a new player to the game.");
                 players.put(playerMetadata.getPid(), playerMetadata);
-                oos.writeObject(1);
+                //oos.writeObject(1);
             }
             else {
-                oos.writeObject(0);
+                //oos.writeObject(0);
             }
 
             if (players.size() == 2) {
-                oos.writeObject(1);
+                //oos.writeObject(1);
 
                 Long firstPlayerPid = players.keySet().stream().filter(pid -> !pid.equals(playerMetadata.getPid())).findFirst().get();
                 PlayerMetadata firstPlayerMetadata = players.get(firstPlayerPid);
@@ -77,6 +78,28 @@ public class Server {
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+        }
+
+        System.out.println("Server is trying to open a connection to the client...");
+
+        while (true) {
+            try (Socket serverClientSocket = new Socket(Server.HOST, 1986)) {
+                System.out.println("Trying to open output stream to the client...");
+
+                ObjectOutputStream oos = new ObjectOutputStream(serverClientSocket.getOutputStream());
+
+                System.out.println("Connection to the client successfully created.");
+
+                System.out.println("Sending a new GameState object to the client.");
+
+                oos.writeObject(new GameState());
+
+                System.out.println("New GameState object successfully sent to the client.");
+
+                Thread.sleep(2000);
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

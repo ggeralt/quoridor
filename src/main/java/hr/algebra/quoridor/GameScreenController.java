@@ -1,7 +1,9 @@
 package hr.algebra.quoridor;
 
+import hr.algebra.quoridor.model.GameState;
 import hr.algebra.quoridor.model.PlayerMetadata;
 import hr.algebra.quoridor.model.SerializableButton;
+import hr.algebra.quoridor.thread.ClientThread;
 import hr.algebra.quoridor.util.AlertUtils;
 import hr.algebra.quoridor.util.FXMLUtils;
 import javafx.application.Platform;
@@ -29,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 import static hr.algebra.quoridor.LogInScreenController.getPlayer;
@@ -1034,6 +1038,7 @@ public class GameScreenController implements Initializable {
 
         PlayerMetadata playerMetadata = LogInScreenController.getPlayersMetadata().get(ProcessHandle.current().pid());
 
+        /*
         try (ServerSocket serverSocket = new ServerSocket(Integer.parseInt(playerMetadata.getPort()))){
             System.err.println("Client listening on port: " + serverSocket.getLocalPort());
 
@@ -1045,6 +1050,8 @@ public class GameScreenController implements Initializable {
         }  catch (IOException e) {
             e.printStackTrace();
         }
+
+         */
     }
 
     private static void processSerializableClient(Socket clientSocket) {

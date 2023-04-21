@@ -1,8 +1,10 @@
 package hr.algebra.quoridor;
 
+import hr.algebra.quoridor.model.GameState;
 import hr.algebra.quoridor.model.Player;
 import hr.algebra.quoridor.model.PlayerMetadata;
 import hr.algebra.quoridor.server.Server;
+import hr.algebra.quoridor.thread.ClientThread;
 import hr.algebra.quoridor.util.AlertUtils;
 import hr.algebra.quoridor.util.FXMLUtils;
 import javafx.fxml.FXML;
@@ -14,6 +16,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static javafx.scene.control.Alert.AlertType.ERROR;
 
@@ -41,6 +45,13 @@ public class LogInScreenController {
     }
 
     public void startGame() throws IOException {
+        System.out.println("Client thread is about to start...");
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new ClientThread(new GameState()));
+
+        System.out.println("Client thread started.");
+
         try (Socket clientSocket = new Socket(Server.HOST, Server.PORT)) {
             ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
@@ -53,6 +64,7 @@ public class LogInScreenController {
             playersMetadata.put(ProcessHandle.current().pid(), newPlayerMetadata);
             oos.writeObject(newPlayerMetadata);
 
+            /*
             if (ois.available() > 0) {
                 newPlayerMetadata.setPort(String.valueOf(clientSocket.getLocalPort()));
                 System.out.println("Confirmation read from the server.");
@@ -62,8 +74,9 @@ public class LogInScreenController {
                 }
                 else {
                     System.out.println("SUCCESSFULY CONNECTED");
-                }*/
+                }
             }
+            */
 
         } catch (IOException e) {
             e.printStackTrace();
